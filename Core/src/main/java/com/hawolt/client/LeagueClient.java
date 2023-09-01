@@ -7,7 +7,6 @@ import com.hawolt.client.handler.RMSHandler;
 import com.hawolt.client.handler.RTMPHandler;
 import com.hawolt.client.handler.XMPPHandler;
 import com.hawolt.client.resources.ledge.LedgeEndpoint;
-import com.hawolt.client.resources.ledge.gsm.objects.ActiveGameInformation;
 import com.hawolt.client.resources.platform.PlatformEndpoint;
 import com.hawolt.client.resources.purchasewidget.PurchaseWidget;
 import com.hawolt.generic.data.Platform;
@@ -66,8 +65,8 @@ public class LeagueClient implements Cacheable, Consumer<CachedValueLoader<?>> {
 
     private void cache() {
         ExecutorService service = Executors.newCachedThreadPool();
-        service.execute(new ActiveGameInformation(this));
         service.execute(new CachedValueLoader<>(CacheType.INVENTORY_TOKEN, () -> ledge.getInventoryService().getInventoryToken(), this));
+        service.execute(new CachedValueLoader<>(CacheType.CHAMPION_DATA, () -> ledge.getInventoryService().getInventoryToken(), this));
         service.shutdown();
     }
 
@@ -89,18 +88,6 @@ public class LeagueClient implements Cacheable, Consumer<CachedValueLoader<?>> {
     public <T> T getCachedValue(CacheType type) {
         Logger.info("Get cache value for {}", type);
         return Unsafe.cast(cache.get(type));
-    }
-
-    public void setRMS(RMSHandler rms) {
-        this.rms = rms;
-    }
-
-    public void setXMPP(XMPPHandler xmpp) {
-        this.xmpp = xmpp;
-    }
-
-    public void setRTMP(RTMPHandler rtmp) {
-        this.rtmp = rtmp;
     }
 
     public IVirtualLeagueClientInstance getVirtualLeagueClientInstance() {
@@ -135,6 +122,10 @@ public class LeagueClient implements Cacheable, Consumer<CachedValueLoader<?>> {
         return rms;
     }
 
+    public void setRMS(RMSHandler rms) {
+        this.rms = rms;
+    }
+
     public VirtualRiotMessageClient getRMSClient() {
         return rms.getVirtualRiotMessageClient();
     }
@@ -143,12 +134,20 @@ public class LeagueClient implements Cacheable, Consumer<CachedValueLoader<?>> {
         return xmpp;
     }
 
+    public void setXMPP(XMPPHandler xmpp) {
+        this.xmpp = xmpp;
+    }
+
     public VirtualRiotXMPPClient getXMPPClient() {
         return xmpp.getVirtualRiotXMPPClient();
     }
 
     public RTMPHandler getRTMP() {
         return rtmp;
+    }
+
+    public void setRTMP(RTMPHandler rtmp) {
+        this.rtmp = rtmp;
     }
 
     public LeagueRtmpClient getRTMPClient() {

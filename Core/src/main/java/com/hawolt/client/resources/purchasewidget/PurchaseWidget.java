@@ -8,10 +8,9 @@ import com.hawolt.generic.token.impl.StringTokenSupplier;
 import com.hawolt.http.OkHttp3Client;
 import com.hawolt.http.layer.IResponse;
 import com.hawolt.virtual.clientconfig.impl.redge.RedgeType;
-import com.hawolt.virtual.leagueclient.authentication.AbstractTokenSetup;
-import com.hawolt.virtual.leagueclient.instance.ClientTokenStorage;
 import com.hawolt.virtual.leagueclient.instance.IVirtualLeagueClientInstance;
-import okhttp3.*;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

@@ -1,11 +1,10 @@
 package com.hawolt.async.rms;
 
 import com.hawolt.LeagueClientUI;
-import com.hawolt.client.Launcher;
 import com.hawolt.generic.data.Platform;
 import com.hawolt.rms.data.subject.service.IServiceMessageListener;
 import com.hawolt.rms.data.subject.service.RiotMessageServiceMessage;
-import org.json.JSONObject;
+import com.hawolt.util.Launcher;
 
 /**
  * Created: 11/08/2023 18:01
@@ -25,7 +24,7 @@ public class GameStartListener implements IServiceMessageListener<RiotMessageSer
     public void onMessage(RiotMessageServiceMessage riotMessageServiceMessage) {
         boolean gameStart = riotMessageServiceMessage.getPayload().getResource().endsWith("player-credentials-update");
         if (!gameStart) return;
-        Launcher.launch(platform, riotMessageServiceMessage.getPayload().getPayload());
+        Launcher.launch(leagueClientUI.getSettingService(), platform, riotMessageServiceMessage.getPayload().getPayload());
         leagueClientUI.getChatSidebar().getEssentials().disableQueueState();
     }
 

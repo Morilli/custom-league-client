@@ -1,6 +1,5 @@
 package com.hawolt.ui.chat.window;
 
-import com.hawolt.LeagueClientUI;
 import com.hawolt.ui.chat.friendlist.IFriendListComponent;
 import com.hawolt.util.AudioEngine;
 import com.hawolt.util.panel.ChildUIComponent;
@@ -81,6 +80,7 @@ public class ChatUI extends ChildUIComponent implements IMessageListener, IChatW
         );
         if (!isChatConfigured(lastOpenedChat)) addChat(lastOpenedChat);
         this.layout.show(container, lastOpenedChat);
+        getChatContainer(friend.getJID()).drain();
         AudioEngine.play("join_chat.wav");
     }
 
@@ -97,6 +97,7 @@ public class ChatUI extends ChildUIComponent implements IMessageListener, IChatW
     @Override
     public void onMessageReceived(IncomingMessage incomingMessage) {
         if (component != null) component.onMessage(incomingMessage.getFrom());
+        if (incomingMessage.getType().equals("groupchat")) return;
         ChatWindowContent content = getChatContainer(incomingMessage.getFrom());
         content.addMessage(ChatPerspective.OTHER, incomingMessage.getBody());
         boolean isChatOpen = isChatOpened(incomingMessage.getFrom());

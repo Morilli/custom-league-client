@@ -9,7 +9,7 @@ import java.awt.*;
  **/
 
 public class ChatSidebarName extends JComponent {
-    private final Font font = new Font("Arial", Font.BOLD, 20);
+    private final Font font = new Font("Dialog", Font.BOLD, 20);
     private String name;
 
     public ChatSidebarName() {

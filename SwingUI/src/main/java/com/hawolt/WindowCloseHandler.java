@@ -1,11 +1,12 @@
 package com.hawolt;
 
-import com.hawolt.client.settings.login.LoginSettingsService;
+import com.hawolt.settings.SettingManager;
+import com.hawolt.settings.SettingService;
+import com.hawolt.settings.SettingType;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 
 /**
  * Created: 22/08/2023 09:32
@@ -23,7 +24,6 @@ public class WindowCloseHandler extends WindowAdapter {
     @Override
     public void windowClosing(WindowEvent e) {
         super.windowClosing(e);
-
         int option = JOptionPane.showOptionDialog(null,
                 "Do you want to exit or logout?",
                 StaticConstant.PROJECT,
@@ -32,11 +32,9 @@ public class WindowCloseHandler extends WindowAdapter {
                 null,
                 new String[]{"LOGOUT", "EXIT", "CANCEL"},
                 "EXIT");
-
         if (option == 0) {
-            try {
-                LoginSettingsService.get().deleteSettingsFile();
-            } catch (IOException ex) {}
+            SettingService service = new SettingManager();
+            service.write(SettingType.CLIENT, "remember", false);
         }
         if (option != 2) closingFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }

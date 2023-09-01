@@ -6,5 +6,5 @@ package com.hawolt.client.cache;
  **/
 
 public enum CacheType {
-    MATCH_CONTEXT, INVENTORY_TOKEN
+    MATCH_CONTEXT, PLAYER_PREFERENCE, CHAMPION_DATA, INVENTORY_TOKEN
 }

@@ -42,7 +42,7 @@ public class ChatWindowContent extends ChildUIComponent {
         });
     }
 
-    private void drain() {
+    protected void drain() {
         synchronized (lock) {
             Dimension size = history.getSize();
             while (!queue.isEmpty()) {

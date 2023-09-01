@@ -21,8 +21,15 @@ public class LazyLoadedImageComponent extends JPanel implements ResourceConsumer
 
     protected BufferedImage image;
 
+    protected int x, y;
+
+    public LazyLoadedImageComponent(Dimension dimension) {
+        this(null, dimension);
+    }
+
     public LazyLoadedImageComponent(String uri, Dimension dimension) {
         this.dimension = dimension;
+        if (uri == null) return;
         ResourceLoader.loadResource(uri, this);
     }
 
@@ -48,8 +55,8 @@ public class LazyLoadedImageComponent extends JPanel implements ResourceConsumer
         super.paintComponent(g);
         if (image == null) return;
         Dimension bounds = getSize();
-        int x = (bounds.width >> 1) - (image.getWidth() >> 1);
-        int y = (bounds.height >> 1) - (image.getHeight() >> 1);
+        this.x = (bounds.width >> 1) - (image.getWidth() >> 1);
+        this.y = (bounds.height >> 1) - (image.getHeight() >> 1);
         g.drawImage(image, x, y, null);
     }
 }

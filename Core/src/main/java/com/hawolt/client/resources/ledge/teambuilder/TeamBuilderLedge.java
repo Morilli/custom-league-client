@@ -3,7 +3,6 @@ package com.hawolt.client.resources.ledge.teambuilder;
 import com.hawolt.client.LeagueClient;
 import com.hawolt.client.cache.CacheType;
 import com.hawolt.client.resources.ledge.AbstractLedgeEndpoint;
-import com.hawolt.client.resources.ledge.parties.objects.PartiesRegistration;
 import com.hawolt.client.resources.ledge.teambuilder.objects.MatchContext;
 import com.hawolt.generic.Constant;
 import com.hawolt.http.OkHttp3Client;
@@ -20,8 +19,6 @@ import java.io.IOException;
 
 public class TeamBuilderLedge extends AbstractLedgeEndpoint {
 
-    private PartiesRegistration current;
-
     public TeamBuilderLedge(LeagueClient client) {
         super(client);
     }
@@ -31,7 +28,7 @@ public class TeamBuilderLedge extends AbstractLedgeEndpoint {
                 base,
                 name(),
                 version(),
-                client.getVirtualRiotClient().getRiotClientUser().getDataUserId(),
+                client.getVirtualLeagueClientInstance().getUserInformation().getUserInformationLeague().getCUID(),
                 client.getVirtualLeagueClientInstance().getUserInformation().getUserInformationLeagueAccount().getSummonerId()
         );
         JSONObject object = new JSONObject();

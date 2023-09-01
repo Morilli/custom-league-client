@@ -19,6 +19,38 @@ public class ClientConfiguration {
         this.builder = builder;
     }
 
+    private static ClientConfiguration.Builder getDefault() {
+        return new Builder()
+                .setSupplier(new LocalCookieSupplier())
+                .setIgnoreSummoner(true)
+                .setSelfRefresh(true)
+                .setMinimal(false)
+                .setComplete(true)
+                .setGateway(null);
+    }
+
+    public static ClientConfiguration getDefault(ICookieSupplier supplier) {
+        try {
+            return getDefault()
+                    .setSupplier(supplier)
+                    .build();
+        } catch (IncompleteConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static ClientConfiguration getDefault(String username, String password, MultiFactorSupplier multifactor) {
+        try {
+            return getDefault()
+                    .setMultifactorSupplier(multifactor)
+                    .setUsername(username)
+                    .setPassword(password)
+                    .build();
+        } catch (IncompleteConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public MultiFactorSupplier getMultifactorSupplier() {
         return builder.multifactor;
     }
@@ -138,39 +170,6 @@ public class ClientConfiguration {
 
         public ClientConfiguration build() throws IncompleteConfigurationException {
             return new ClientConfiguration(this);
-        }
-    }
-
-    private static ClientConfiguration.Builder getDefault() {
-        return new Builder()
-                .setSupplier(new LocalCookieSupplier())
-                .setIgnoreSummoner(true)
-                .setSelfRefresh(true)
-                .setMinimal(false)
-                .setComplete(true)
-                .setGateway(null);
-    }
-
-    public static ClientConfiguration getDefault(Platform platform, String token) {
-        try {
-            return getDefault()
-                    .setRefreshToken(token)
-                    .setPlatform(platform)
-                    .build();
-        } catch (IncompleteConfigurationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static ClientConfiguration getDefault(String username, String password, MultiFactorSupplier multifactor) {
-        try {
-            return getDefault()
-                    .setMultifactorSupplier(multifactor)
-                    .setUsername(username)
-                    .setPassword(password)
-                    .build();
-        } catch (IncompleteConfigurationException e) {
-            throw new RuntimeException(e);
         }
     }
 }

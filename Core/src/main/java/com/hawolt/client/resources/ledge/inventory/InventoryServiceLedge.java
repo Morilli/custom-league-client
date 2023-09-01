@@ -32,7 +32,7 @@ public class InventoryServiceLedge extends AbstractLedgeEndpoint {
                 .addQueryParameter("location", String.format("lolriot.ams1.%s", platform.name().toLowerCase()))
                 .addQueryParameter("inventoryTypes", "CHAMPION")
                 .addQueryParameter("inventoryTypes", "CHAMPION_SKIN")
-                .addQueryParameter("accountId", String.valueOf(client.getVirtualRiotClient().getRiotClientUser().getDataUserId()))
+                .addQueryParameter("accountId", String.valueOf(client.getVirtualLeagueClientInstance().getUserInformation().getUserInformationLeague().getCUID()))
                 .build();
         Request request = new Request.Builder()
                 .url(url)
@@ -83,7 +83,7 @@ public class InventoryServiceLedge extends AbstractLedgeEndpoint {
                 .addPathSegment("inventoriesWithLoyalty")
                 .addQueryParameter("puuid", userInformation.getSub())
                 .addQueryParameter("location", String.format("lolriot.ams1.%s", platform.name().toLowerCase()))
-                .addQueryParameter("accountId", String.valueOf(client.getVirtualRiotClient().getRiotClientUser().getDataUserId()))
+                .addQueryParameter("accountId", String.valueOf(client.getVirtualLeagueClientInstance().getUserInformation().getUserInformationLeague().getCUID()))
                 .addQueryParameter("inventoryTypes", type)
                 .addQueryParameter("signed", "true")
                 .build();
@@ -112,7 +112,7 @@ public class InventoryServiceLedge extends AbstractLedgeEndpoint {
                 .addPathSegment("inventoriesWithLoyalty")
                 .addQueryParameter("puuid", userInformation.getSub())
                 .addQueryParameter("location", String.format("lolriot.ams1.%s", platform.name().toLowerCase()))
-                .addQueryParameter("accountId", String.valueOf(client.getVirtualRiotClient().getRiotClientUser().getDataUserId()))
+                .addQueryParameter("accountId", String.valueOf(client.getVirtualLeagueClientInstance().getUserInformation().getUserInformationLeague().getCUID()))
                 .addQueryParameter("inventoryTypes", "TFT_PLAYBOOK")
                 .build();
         Request request = new Request.Builder()

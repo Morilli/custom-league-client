@@ -1,7 +1,10 @@
 package com.hawolt.ui.queue;
 
 import com.hawolt.async.ExecutorManager;
+import com.hawolt.util.ColorPalette;
 import com.hawolt.util.panel.ChildUIComponent;
+import com.hawolt.util.ui.Label;
+import com.hawolt.util.ui.TextAlign;
 
 import javax.swing.border.MatteBorder;
 import java.awt.*;
@@ -22,7 +25,7 @@ public class QueueState extends ChildUIComponent {
 
     public QueueState() {
         super(new BorderLayout());
-        this.setBackground(Color.GRAY);
+        this.setBackground(ColorPalette.BACKGROUND_COLOR);
         this.setPreferredSize(new Dimension(0, 30));
         this.setBorder(new MatteBorder(0, 0, 2, 0, Color.DARK_GRAY));
         this.service.scheduleAtFixedRate(this::repaint, 0, 20, TimeUnit.MILLISECONDS);
@@ -32,19 +35,19 @@ public class QueueState extends ChildUIComponent {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D graphics2D = (Graphics2D) g;
-        graphics2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        graphics2D.setFont(font);
-        graphics2D.setColor(Color.WHITE);
-        Dimension dimension = getSize();
+
         long elapsed = System.currentTimeMillis() - currentTimeMillis;
         String total = convertMStoTimestamp(elapsed);
-        FontMetrics metrics = graphics2D.getFontMetrics();
-        int y = (dimension.height >> 1) + (metrics.getAscent() >> 1) - 2;
-        int width = metrics.stringWidth(total);
-        graphics2D.drawString(total, dimension.width - width - 5, y);
-        if (estimate == null) return;
-        if (lpq) graphics2D.setColor(Color.RED);
-        graphics2D.drawString(String.format("Ø %s", estimate), 5, y);
+
+        Label elapsedLabel = new Label(total, TextAlign.RIGHT, true);
+        elapsedLabel.setBounds(0, 0, getWidth(), getHeight());
+        elapsedLabel.setFontSize(25);
+        elapsedLabel.drawTextStandalone(graphics2D);
+
+        Label estimateLabel = new Label(String.format("Ø %s", estimate), TextAlign.LEFT, true);
+        estimateLabel.setBounds(0, 0, getWidth(), getHeight());
+        estimateLabel.setFontSize(25);
+        estimateLabel.drawTextStandalone(graphics2D);
     }
 
     private String convertMStoTimestamp(long elapsed) {

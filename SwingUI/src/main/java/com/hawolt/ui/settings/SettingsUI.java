@@ -1,27 +1,29 @@
 package com.hawolt.ui.settings;
 
-import com.hawolt.client.settings.client.ClientSettings;
-import com.hawolt.client.settings.client.ClientSettingsService;
+import com.hawolt.LeagueClientUI;
+import com.hawolt.settings.SettingService;
 import com.hawolt.util.panel.ChildUIComponent;
 
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
-import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SettingsUI extends ChildUIComponent {
     private static final Font font = new Font("Arial", Font.PLAIN, 20);
-    SettingsSidebar sidebar;
-    List<SettingsPage> pageList = new ArrayList<SettingsPage>();
-    public SettingsUI() {
+    private final List<SettingsPage> pages = new ArrayList<>();
+    private final LeagueClientUI leagueClientUI;
+    private final SettingsSidebar sidebar;
+
+    public SettingsUI(LeagueClientUI leagueClientUI) {
         super(new BorderLayout());
+        this.leagueClientUI = leagueClientUI;
         setBorder(BorderFactory.createTitledBorder(
                         new MatteBorder(2, 2, 2, 2, Color.DARK_GRAY)
                 )
         );
-        ChildUIComponent header = new ChildUIComponent (new BorderLayout());
+        ChildUIComponent header = new ChildUIComponent(new BorderLayout());
         header.setPreferredSize(new Dimension(0, 40));
         JLabel label = new JLabel("Settings");
         label.setFont(font);
@@ -44,7 +46,7 @@ public class SettingsUI extends ChildUIComponent {
         clientGroup.addToContainer(clientGeneralButton);
 
         //Footer
-        ChildUIComponent footer = new ChildUIComponent(new FlowLayout(FlowLayout.CENTER, 5,5));
+        ChildUIComponent footer = new ChildUIComponent(new FlowLayout(FlowLayout.CENTER, 5, 5));
         add(footer, BorderLayout.SOUTH);
 
         JButton saveButton = new JButton("Save");
@@ -58,36 +60,32 @@ public class SettingsUI extends ChildUIComponent {
             close();
         });
         footer.add(closeButton);
-
         revalidate();
     }
 
     public void save() {
-        for (SettingsPage page : pageList) {
+        for (SettingsPage page : pages) {
             page.save();
         }
-        try {
-            ClientSettingsService.get().writeSettingsFile();
-        } catch (IOException e) {}
     }
 
     public void close() {
-        for (SettingsPage page : pageList) {
+        for (SettingsPage page : pages) {
             page.close();
         }
         this.setVisible(false);
     }
 
     public void add(SettingsPage page) {
-        pageList.add(page);
+        pages.add(page);
         add(page, BorderLayout.CENTER);
     }
 
     private SettingsPage newClientGeneralPage() {
-        ClientSettings settings = ClientSettingsService.get().getSettings();
+        SettingService service = leagueClientUI.getSettingService();
         SettingsPage result = new SettingsPage();
         result.add(SettingUIComponent.createTagComponent("Path"));
-        result.add(SettingUIComponent.createPathComponent("League Base Directory Path", settings, ClientSettings.Key.GAME_BASE_DIRECTORY.get()));
+        result.add(SettingUIComponent.createPathComponent("League Base Directory Path", service, "GameBaseDir"));
         return result;
     }
 }

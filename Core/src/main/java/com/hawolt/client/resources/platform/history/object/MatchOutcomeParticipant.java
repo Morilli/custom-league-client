@@ -18,9 +18,8 @@ public class MatchOutcomeParticipant {
     private final int goldEarned, totalDamageDealt;
     private final int[] items = new int[7];
     private final String puuid, summonerName;
-    private short primary, secondary;
-
     private final boolean win;
+    private short primary, secondary;
 
     public MatchOutcomeParticipant(JSONObject o) {
         this.summonerName = o.getString("summonerName");

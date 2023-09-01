@@ -1,7 +1,7 @@
 package com.hawolt.shutdown.hooks;
 
-import com.hawolt.shutdown.ShutdownTask;
 import com.hawolt.client.LeagueClient;
+import com.hawolt.shutdown.ShutdownTask;
 
 /**
  * Created: 16/08/2023 18:06

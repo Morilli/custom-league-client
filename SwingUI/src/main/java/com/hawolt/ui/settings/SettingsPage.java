@@ -5,12 +5,12 @@ import com.hawolt.util.ui.DynamicGridLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SettingsPage extends ChildUIComponent {
+    private final List<SettingUIComponent> componentList = new ArrayList<>();
     private final ChildUIComponent container;
-    private List<SettingUIComponent> componentList = new ArrayList<>();
 
     public SettingsPage() {
         super(new BorderLayout(0, 5));

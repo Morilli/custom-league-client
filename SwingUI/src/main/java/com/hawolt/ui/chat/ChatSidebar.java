@@ -5,10 +5,13 @@ import com.hawolt.ui.chat.friendlist.ChatSidebarEssentials;
 import com.hawolt.ui.chat.friendlist.ChatSidebarFooter;
 import com.hawolt.ui.chat.friendlist.ChatSidebarFriendlist;
 import com.hawolt.ui.chat.profile.ChatSidebarProfile;
+import com.hawolt.util.ColorPalette;
 import com.hawolt.util.panel.ChildUIComponent;
+import com.hawolt.util.ui.ScrollPane;
 import com.hawolt.virtual.leagueclient.userinfo.UserInformation;
 
 import javax.swing.*;
+import javax.swing.border.MatteBorder;
 import java.awt.*;
 
 /**
@@ -28,9 +31,11 @@ public class ChatSidebar extends ChildUIComponent {
         this.setBackground(Color.RED);
         this.add(profile = new ChatSidebarProfile(information, new BorderLayout()), BorderLayout.NORTH);
         ChildUIComponent component = new ChildUIComponent(new BorderLayout());
-        list = new ChatSidebarFriendlist(leagueClientUI.getChatUI());
+        this.setBorder(new MatteBorder(0, 2, 0, 0, Color.DARK_GRAY));
+        component.setBackground(ColorPalette.BACKGROUND_COLOR);
+        list = new ChatSidebarFriendlist(leagueClientUI.getChatUI(), leagueClientUI);
         component.add(list, BorderLayout.NORTH);
-        JScrollPane scrollPane = new JScrollPane(component);
+        ScrollPane scrollPane = new ScrollPane(component);
         scrollPane.getVerticalScrollBar().setUnitIncrement(15);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         ChildUIComponent bundle = new ChildUIComponent(new BorderLayout());

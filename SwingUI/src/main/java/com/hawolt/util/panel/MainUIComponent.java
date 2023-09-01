@@ -1,5 +1,7 @@
 package com.hawolt.util.panel;
 
+import com.hawolt.util.ColorPalette;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -18,6 +20,7 @@ public class MainUIComponent extends JPanel {
         this.frame = frame;
         this.container = frame.getContentPane();
         this.container.removeAll();
+        setBackground(ColorPalette.BACKGROUND_COLOR);
     }
 
     public void init() {

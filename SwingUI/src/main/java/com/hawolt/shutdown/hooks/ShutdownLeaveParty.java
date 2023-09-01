@@ -3,7 +3,6 @@ package com.hawolt.shutdown.hooks;
 import com.hawolt.client.LeagueClient;
 import com.hawolt.client.resources.ledge.parties.PartiesLedge;
 import com.hawolt.client.resources.ledge.parties.objects.PartiesRegistration;
-import com.hawolt.client.resources.ledge.parties.objects.data.PartyAction;
 import com.hawolt.client.resources.ledge.parties.objects.data.PartyRole;
 import com.hawolt.shutdown.ShutdownTask;
 

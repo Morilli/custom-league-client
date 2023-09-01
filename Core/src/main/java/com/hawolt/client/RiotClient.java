@@ -54,9 +54,9 @@ public class RiotClient implements BiConsumer<VirtualLeagueClient, Throwable> {
     }
 
     private void finalize(LeagueClient client) throws IOException, URISyntaxException {
-        if (configuration.getComplete()) client.setRMS(RMSHandler.build(client).connect());
-        if (!configuration.getMinimal()) client.setXMPP(XMPPHandler.build(client).connect());
         if (configuration.getComplete()) client.setRTMP(RTMPHandler.build(client).connect());
+        if (configuration.getComplete()) client.setRMS(RMSHandler.build(client).connect());
+        if (!configuration.getMinimal()) client.setXMPP(XMPPHandler.build(client));
     }
 
     private VirtualRiotClientInstance getRiotClientInstance() {

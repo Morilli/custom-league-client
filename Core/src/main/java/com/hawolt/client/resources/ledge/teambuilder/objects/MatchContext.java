@@ -23,4 +23,12 @@ public class MatchContext {
     public String getStatus() {
         return status;
     }
+
+    @Override
+    public String toString() {
+        return "MatchContext{" +
+                "payload=" + payload +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }

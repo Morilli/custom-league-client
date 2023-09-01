@@ -29,4 +29,13 @@ public class MatchContextPayload {
     public String getTargetRegion() {
         return targetRegion;
     }
+
+    @Override
+    public String toString() {
+        return "MatchContextPayload{" +
+                "chatRoomName='" + chatRoomName + '\'' +
+                ", domain='" + domain + '\'' +
+                ", targetRegion='" + targetRegion + '\'' +
+                '}';
+    }
 }

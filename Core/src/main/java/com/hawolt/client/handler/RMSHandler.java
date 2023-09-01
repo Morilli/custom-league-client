@@ -19,13 +19,13 @@ public class RMSHandler implements IRiotMessageServiceConnectionCallback {
     private final VirtualRiotMessageClient virtualRiotMessageClient;
     private final LeagueClient client;
 
-    public static RMSHandler build(LeagueClient client) throws URISyntaxException, MalformedURLException {
-        return new RMSHandler(client);
-    }
-
     public RMSHandler(LeagueClient client) {
         this.client = client;
         this.virtualRiotMessageClient = VirtualRiotMessageClient.create(client.getVirtualLeagueClient(), this);
+    }
+
+    public static RMSHandler build(LeagueClient client) throws URISyntaxException, MalformedURLException {
+        return new RMSHandler(client);
     }
 
     public RMSHandler connect() {

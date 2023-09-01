@@ -7,6 +7,7 @@ import com.hawolt.client.resources.ledge.leagues.LeagueLedge;
 import com.hawolt.client.resources.ledge.loot.LootLedge;
 import com.hawolt.client.resources.ledge.parties.PartiesLedge;
 import com.hawolt.client.resources.ledge.perks.PerksLedge;
+import com.hawolt.client.resources.ledge.preferences.PlayerPreferencesLedge;
 import com.hawolt.client.resources.ledge.store.StoreLedge;
 import com.hawolt.client.resources.ledge.summoner.SummonerLedge;
 import com.hawolt.client.resources.ledge.teambuilder.TeamBuilderLedge;
@@ -18,6 +19,7 @@ import com.hawolt.client.resources.ledge.teambuilder.TeamBuilderLedge;
 
 public class LedgeEndpoint {
     private final GameServiceMessageLedge gameServiceMessageLedge;
+    private final PlayerPreferencesLedge playerPreferencesLedge;
     private final InventoryServiceLedge inventoryServiceLedge;
     private final TeamBuilderLedge teamBuilderLedge;
     private final SummonerLedge summonerLedge;
@@ -36,6 +38,7 @@ public class LedgeEndpoint {
         this.summonerLedge = new SummonerLedge(client);
         this.teamBuilderLedge = new TeamBuilderLedge(client);
         this.inventoryServiceLedge = new InventoryServiceLedge(client);
+        this.playerPreferencesLedge = new PlayerPreferencesLedge(client);
         this.gameServiceMessageLedge = new GameServiceMessageLedge(client);
     }
 
@@ -73,5 +76,9 @@ public class LedgeEndpoint {
 
     public PerksLedge getPerks() {
         return perksLedge;
+    }
+
+    public PlayerPreferencesLedge getPlayerPreferences() {
+        return playerPreferencesLedge;
     }
 }

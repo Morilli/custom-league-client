@@ -2,6 +2,7 @@ package com.hawolt.ui.runes;
 
 import com.hawolt.async.LazyLoadedImageComponent;
 import com.hawolt.util.AudioEngine;
+import com.hawolt.util.ColorPalette;
 
 import javax.swing.*;
 import java.awt.*;
@@ -78,8 +79,7 @@ public class RunePanelRune extends LazyLoadedImageComponent implements MouseList
     @Override
     protected void paintComponent(Graphics g) {
         Dimension dimension = getSize();
-        Color background = getBackground();
-        g.setColor(background);
+        g.setColor(ColorPalette.BACKGROUND_COLOR);
         g.fillRect(0, 0, dimension.width, dimension.height);
         Graphics2D graphics2D = (Graphics2D) g;
         if (selected && image != null) {

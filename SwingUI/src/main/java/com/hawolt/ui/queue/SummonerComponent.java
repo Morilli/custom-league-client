@@ -23,7 +23,7 @@ import java.io.ByteArrayInputStream;
 public class SummonerComponent extends ChildUIComponent implements ResourceConsumer<BufferedImage, byte[]> {
     private static final String CD_PP_BASE = "https://raw.communitydragon.org/latest/game/assets/ux/summonericons/profileicon%s.png";
     private static final Dimension IMAGE_DIMENSION = new Dimension(128, 128);
-    private static final Font NAME_FONT = new Font("Arial", Font.BOLD, 24);
+    private static final Font NAME_FONT = new Font("Dialog", Font.BOLD, 24);
     private static final Font ROLE_FONT = new Font("Arial", Font.BOLD, 16);
     private PartyParticipant participant;
     private BufferedImage image;

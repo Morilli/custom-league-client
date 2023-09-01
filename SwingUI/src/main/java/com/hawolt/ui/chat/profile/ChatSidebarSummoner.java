@@ -1,5 +1,6 @@
 package com.hawolt.ui.chat.profile;
 
+import com.hawolt.util.ColorPalette;
 import com.hawolt.util.panel.ChildUIComponent;
 import com.hawolt.virtual.leagueclient.userinfo.UserInformation;
 
@@ -19,7 +20,7 @@ public class ChatSidebarSummoner extends ChildUIComponent {
     public ChatSidebarSummoner(UserInformation information, LayoutManager layout) {
         super(layout);
         this.setBorder(new EmptyBorder(0, 5, 0, 0));
-        this.setBackground(Color.GRAY);
+        this.setBackground(ColorPalette.BACKGROUND_COLOR);
         add(name = new ChatSidebarName());
         add(bar = new ChatSidebarXP(information));
         add(status = new ChatSidebarStatus());

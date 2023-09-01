@@ -22,14 +22,14 @@ public class XMPPHandler implements ISocketListener, EventListener<PlainData> {
     private final RiotDataCallback riotDataCallback;
     private long timestamp;
 
-    public static XMPPHandler build(LeagueClient client) throws URISyntaxException, MalformedURLException {
-        RiotDataCallback riotDataCallback = new RiotDataCallback(client.getVirtualLeagueClient());
-        return new XMPPHandler(riotDataCallback);
-    }
-
     public XMPPHandler(RiotDataCallback riotDataCallback) {
         this.virtualRiotXMPPClient = new VirtualRiotXMPPClient(riotDataCallback);
         this.riotDataCallback = riotDataCallback;
+    }
+
+    public static XMPPHandler build(LeagueClient client) throws URISyntaxException, MalformedURLException {
+        RiotDataCallback riotDataCallback = new RiotDataCallback(client.getVirtualLeagueClient());
+        return new XMPPHandler(riotDataCallback);
     }
 
     public XMPPHandler connect() {

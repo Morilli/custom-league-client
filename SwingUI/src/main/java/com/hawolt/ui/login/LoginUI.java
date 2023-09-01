@@ -1,8 +1,8 @@
 package com.hawolt.ui.login;
 
 import com.hawolt.LeagueClientUI;
-import com.hawolt.client.settings.login.LoginSettings;
-import com.hawolt.client.settings.login.LoginSettingsService;
+import com.hawolt.settings.SettingService;
+import com.hawolt.settings.SettingType;
 import com.hawolt.ui.impl.JHintTextField;
 import com.hawolt.util.panel.MainUIComponent;
 
@@ -13,7 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 
 /**
  * Created: 06/08/2023 13:10
@@ -24,25 +23,27 @@ public class LoginUI extends MainUIComponent implements ActionListener {
     private final JHintTextField username;
     private final JPasswordField password;
     private final ILoginCallback callback;
+    private final SettingService service;
+    private final JCheckBox rememberMe, optimizeRAM;
     private final JButton login;
-    private final JCheckBox rememberMe;
 
-    public static LoginUI show(LeagueClientUI leagueClientUI) {
-        return new LoginUI(leagueClientUI);
-    }
 
     private LoginUI(LeagueClientUI clientUI) {
         super(clientUI);
         this.setLayout(new GridLayout(0, 1, 0, 5));
         this.setBorder(new EmptyBorder(5, 5, 5, 5));
 
+        this.service = clientUI.getSettingService();
         this.username = new JHintTextField("");
         this.password = new JPasswordField();
         this.login = new JButton("Login");
         this.login.setActionCommand("REGULAR");
         this.rememberMe = new JCheckBox("Remember Me");
+        this.optimizeRAM = new JCheckBox("RAM Optimization (Slow)");
         JLabel usernameLabel = new JLabel("Username");
+        usernameLabel.setForeground(Color.WHITE);
         JLabel passwordLabel = new JLabel("Password");
+        passwordLabel.setForeground(Color.WHITE);
 
         this.add(usernameLabel);
         this.add(username);
@@ -50,6 +51,8 @@ public class LoginUI extends MainUIComponent implements ActionListener {
         this.add(password);
         this.add(login);
         this.add(rememberMe);
+        //TODO add this later
+        //this.add(optimizeRAM);
         this.setPreferredSize(new Dimension(300, 200));
         this.login.addActionListener(this);
         this.container.add(this);
@@ -74,11 +77,19 @@ public class LoginUI extends MainUIComponent implements ActionListener {
         this.init();
     }
 
+    public static LoginUI show(LeagueClientUI leagueClientUI) {
+        return new LoginUI(leagueClientUI);
+    }
+
     public void toggle(boolean state) {
         rememberMe.setEnabled(state);
         username.setEnabled(state);
         password.setEnabled(state);
         login.setEnabled(state);
+    }
+
+    public JCheckBox getRememberMe() {
+        return rememberMe;
     }
 
     @Override
@@ -87,13 +98,10 @@ public class LoginUI extends MainUIComponent implements ActionListener {
         String pass = new String(password.getPassword());
         String user = username.getText();
         if (rememberMe.isSelected()) {
-            LoginSettings settings = LoginSettingsService.get().getSettings();
-            settings.setUsername(user).setPassword(pass).setRememberMe(rememberMe.isSelected());
-            try {
-                LoginSettingsService.get().writeSettingsFile();
-            } catch (IOException ex) {
-            }
+            service.write(SettingType.CLIENT, "remember", true);
+            service.write(SettingType.CLIENT, "username", user);
         }
+        service.set(user);
         LeagueClientUI.service.execute(() -> callback.onLogin(user, pass));
     }
 }

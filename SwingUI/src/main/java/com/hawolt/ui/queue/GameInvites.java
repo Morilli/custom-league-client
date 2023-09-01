@@ -42,6 +42,7 @@ public class GameInvites extends ChildUIComponent implements IServiceMessageList
     @Override
     public void onMessage(RiotMessageServiceMessage riotMessageServiceMessage) {
         JSONObject payload = riotMessageServiceMessage.getPayload().getPayload();
+        if (payload.isNull("player")) return;
         PartiesRegistration registration = new PartiesRegistration(payload.getJSONObject("player"));
         List<Party> list = registration.getParties().stream().filter(party -> party.getRole().equals("INVITED")).toList();
         setVisible(!list.isEmpty());

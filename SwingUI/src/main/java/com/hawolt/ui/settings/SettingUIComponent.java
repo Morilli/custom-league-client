@@ -1,18 +1,20 @@
 package com.hawolt.ui.settings;
 
-import com.hawolt.client.settings.SettingsObject;
 
+import com.hawolt.logger.Logger;
+import com.hawolt.settings.SettingService;
+import com.hawolt.settings.SettingType;
+import com.hawolt.util.panel.ChildUIComponent;
+import com.hawolt.virtual.misc.DynamicObject;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.EventListenerList;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
-
-import com.hawolt.util.panel.ChildUIComponent;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.EventListenerList;
 
 public class SettingUIComponent extends ChildUIComponent {
     private static final Font textFont = new Font("Arial", Font.PLAIN, 12);
@@ -20,34 +22,8 @@ public class SettingUIComponent extends ChildUIComponent {
     private final EventListenerList onSave = new EventListenerList();
     private final EventListenerList onClose = new EventListenerList();
 
-    private SettingUIComponent (LayoutManager layout, SettingsObject settings, String key) {
+    private SettingUIComponent(LayoutManager layout) {
         super(layout);
-    }
-
-    public void save() {
-        Object[] listeners = onSave.getListenerList();
-        for (int i = listeners.length-2; i>=0; i-=2) {
-            if (listeners[i]==ActionListener.class) {
-                ((ActionListener)listeners[i+1]).actionPerformed(null);
-            }
-        }
-    }
-
-    public void close() {
-        Object[] listeners = onClose.getListenerList();
-        for (int i = listeners.length-2; i>=0; i-=2) {
-            if (listeners[i]==ActionListener.class) {
-                ((ActionListener)listeners[i+1]).actionPerformed(null);
-            }
-        }
-    }
-
-    private void addOnSaveActionListener(ActionListener listener) {
-        onSave.add(ActionListener.class, listener);
-    }
-
-    private void addOnQuitActionListener(ActionListener listener) {
-        onClose.add(ActionListener.class, listener);
     }
 
     public static ChildUIComponent createTagComponent(String name) {
@@ -64,8 +40,10 @@ public class SettingUIComponent extends ChildUIComponent {
         return result;
     }
 
-    public static SettingUIComponent createPathComponent(String name, SettingsObject settings, String key) {
-        SettingUIComponent result = new SettingUIComponent(new BorderLayout(), settings, key);
+    public static SettingUIComponent createPathComponent(String name, SettingService settingService, String key) {
+        DynamicObject settings = settingService.getClientSettings();
+
+        SettingUIComponent result = new SettingUIComponent(new BorderLayout());
         result.setPreferredSize(new Dimension(10, 64));
 
         ChildUIComponent pathContainer = new ChildUIComponent(new FlowLayout());
@@ -80,7 +58,7 @@ public class SettingUIComponent extends ChildUIComponent {
         labelContainer.add(label);
 
         JTextField pathField = new JTextField("");
-        pathField.setText(settings.getString(key));
+        pathField.setText(settings.getByKeyOrDefault(key, "C:\\Riot Games\\League of Legends"));
         pathField.setPreferredSize(new Dimension(800, 30));
         pathContainer.add(pathField, BorderLayout.SOUTH);
 
@@ -104,14 +82,42 @@ public class SettingUIComponent extends ChildUIComponent {
             String path = pathField.getText();
             try {
                 Paths.get(path);
-                settings.put(key, path);
-            } catch (InvalidPathException | NullPointerException e) {}
+                settingService.write(SettingType.CLIENT, key, path);
+            } catch (InvalidPathException | NullPointerException e) {
+                Logger.warn(e.getMessage());
+            }
         });
 
         result.addOnQuitActionListener(listener -> {
-            pathField.setText(settings.getString(key));
+            pathField.setText(settings.getByKeyOrDefault(key, "C:\\Riot Games\\League of Legends"));
         });
 
         return result;
+    }
+
+    public void save() {
+        Object[] listeners = onSave.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == ActionListener.class) {
+                ((ActionListener) listeners[i + 1]).actionPerformed(null);
+            }
+        }
+    }
+
+    public void close() {
+        Object[] listeners = onClose.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == ActionListener.class) {
+                ((ActionListener) listeners[i + 1]).actionPerformed(null);
+            }
+        }
+    }
+
+    private void addOnSaveActionListener(ActionListener listener) {
+        onSave.add(ActionListener.class, listener);
+    }
+
+    private void addOnQuitActionListener(ActionListener listener) {
+        onClose.add(ActionListener.class, listener);
     }
 }

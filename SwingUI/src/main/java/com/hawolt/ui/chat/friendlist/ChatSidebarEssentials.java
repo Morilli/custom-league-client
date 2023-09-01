@@ -3,6 +3,7 @@ package com.hawolt.ui.chat.friendlist;
 import com.hawolt.LeagueClientUI;
 import com.hawolt.ui.queue.GameInvites;
 import com.hawolt.ui.queue.QueueState;
+import com.hawolt.util.ColorPalette;
 import com.hawolt.util.panel.ChildUIComponent;
 import com.hawolt.xmpp.core.VirtualRiotXMPPClient;
 
@@ -27,19 +28,20 @@ public class ChatSidebarEssentials extends ChildUIComponent {
                         new EmptyBorder(0, 5, 5, 5)
                 )
         );
-        this.setBackground(Color.GRAY);
+        this.setBackground(ColorPalette.BACKGROUND_COLOR);
         VirtualRiotXMPPClient xmppClient = leagueClientUI.getLeagueClient().getXMPPClient();
         ChatSidebarFriendEssentials essentials = new ChatSidebarFriendEssentials(xmppClient, component);
         this.add(essentials, BorderLayout.CENTER);
         this.state = new QueueState();
         this.state.setVisible(false);
         ChildUIComponent display = new ChildUIComponent(new BorderLayout());
+        display.setBackground(ColorPalette.BACKGROUND_COLOR);
         display.add(state, BorderLayout.NORTH);
         display.add(new GameInvites(leagueClientUI), BorderLayout.CENTER);
         this.add(display, BorderLayout.NORTH);
         ChildUIComponent requests = new ChildUIComponent(new GridLayout(0, 1, 0, 5));
         requests.setBorder(new EmptyBorder(5, 0, 0, 0));
-        requests.setBackground(Color.GRAY);
+        requests.setBackground(ColorPalette.BACKGROUND_COLOR);
         this.add(requests, BorderLayout.SOUTH);
         component.registerNotificationBar(requests);
     }

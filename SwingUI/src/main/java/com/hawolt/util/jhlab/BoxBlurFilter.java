@@ -12,26 +12,6 @@ public class BoxBlurFilter extends AbstractBufferedImageOp {
     private int vRadius;
     private int iterations = 1;
 
-    public BufferedImage filter(BufferedImage src, BufferedImage dst) {
-        int width = src.getWidth();
-        int height = src.getHeight();
-
-        if (dst == null)
-            dst = createCompatibleDestImage(src, null);
-
-        int[] inPixels = new int[width * height];
-        int[] outPixels = new int[width * height];
-        getRGB(src, 0, 0, width, height, inPixels);
-
-        for (int i = 0; i < iterations; i++) {
-            blur(inPixels, outPixels, width, height, hRadius);
-            blur(outPixels, inPixels, height, width, vRadius);
-        }
-
-        setRGB(dst, 0, 0, width, height, inPixels);
-        return dst;
-    }
-
     public static void blur(int[] in, int[] out, int width, int height, int radius) {
         int widthMinus1 = width - 1;
         int tableSize = 2 * radius + 1;
@@ -76,36 +56,56 @@ public class BoxBlurFilter extends AbstractBufferedImageOp {
         }
     }
 
-    public void setHRadius(int hRadius) {
-        this.hRadius = hRadius;
+    public BufferedImage filter(BufferedImage src, BufferedImage dst) {
+        int width = src.getWidth();
+        int height = src.getHeight();
+
+        if (dst == null)
+            dst = createCompatibleDestImage(src, null);
+
+        int[] inPixels = new int[width * height];
+        int[] outPixels = new int[width * height];
+        getRGB(src, 0, 0, width, height, inPixels);
+
+        for (int i = 0; i < iterations; i++) {
+            blur(inPixels, outPixels, width, height, hRadius);
+            blur(outPixels, inPixels, height, width, vRadius);
+        }
+
+        setRGB(dst, 0, 0, width, height, inPixels);
+        return dst;
     }
 
     public int getHRadius() {
         return hRadius;
     }
 
-    public void setVRadius(int vRadius) {
-        this.vRadius = vRadius;
+    public void setHRadius(int hRadius) {
+        this.hRadius = hRadius;
     }
 
     public int getVRadius() {
         return vRadius;
     }
 
-    public void setRadius(int radius) {
-        this.hRadius = this.vRadius = radius;
+    public void setVRadius(int vRadius) {
+        this.vRadius = vRadius;
     }
 
     public int getRadius() {
         return hRadius;
     }
 
-    public void setIterations(int iterations) {
-        this.iterations = iterations;
+    public void setRadius(int radius) {
+        this.hRadius = this.vRadius = radius;
     }
 
     public int getIterations() {
         return iterations;
+    }
+
+    public void setIterations(int iterations) {
+        this.iterations = iterations;
     }
 
     public String toString() {

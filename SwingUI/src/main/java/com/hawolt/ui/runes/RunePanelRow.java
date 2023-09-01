@@ -1,6 +1,8 @@
 package com.hawolt.ui.runes;
 
-import javax.swing.*;
+import com.hawolt.util.ColorPalette;
+import com.hawolt.util.panel.ChildUIComponent;
+
 import java.awt.*;
 import java.util.LinkedList;
 
@@ -9,7 +11,7 @@ import java.util.LinkedList;
  * Author: Twitter @hawolt
  **/
 
-public class RunePanelRow extends JPanel implements IRuneSelection {
+public class RunePanelRow extends ChildUIComponent implements IRuneSelection {
     private final RunePanelRune[] components;
     private final IRuneSelection selection;
     private final int componentIndex;
@@ -17,6 +19,7 @@ public class RunePanelRow extends JPanel implements IRuneSelection {
 
     public RunePanelRow(IRuneSelection selection, int componentIndex, LinkedList<DDRune> list, Dimension dimension) {
         this.setLayout(new GridLayout(0, list.size(), 5, 0));
+        this.setBackground(ColorPalette.BACKGROUND_COLOR);
         this.selection = selection;
         this.componentIndex = componentIndex;
         this.components = new RunePanelRune[list.size()];

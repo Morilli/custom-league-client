@@ -28,7 +28,7 @@ public class HeaderWallet extends ChildUIComponent implements Runnable, IService
         this.add(be = new HeaderWalletCurrency(String.join("/", BASE, "icon-be-150.png")));
         this.add(rp = new HeaderWalletCurrency(String.join("/", BASE, "icon-rp-72.png")));
         this.LeagueClient = LeagueClient;
-        this.setBackground(Color.GRAY);
+        this.setBackground(new Color(0, 0, 0, 0));
         LeagueClientUI.service.execute(this);
     }
 

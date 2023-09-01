@@ -13,6 +13,7 @@ import com.hawolt.client.resources.ledge.summoner.objects.Summoner;
 import com.hawolt.generic.Constant;
 import com.hawolt.http.OkHttp3Client;
 import com.hawolt.http.layer.IResponse;
+import com.hawolt.logger.Logger;
 import com.hawolt.virtual.leagueclient.client.Authentication;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -39,16 +40,19 @@ public class PartiesLedge extends AbstractLedgeEndpoint {
         String leagueClientVersion = gameVersionSupplier.getVersionValue("League of Legends.exe");
         int majorIndex = leagueClientVersion.indexOf('.');
         String major = leagueClientVersion.substring(0, majorIndex);
-        int minorIndex = leagueClientVersion.indexOf('.', majorIndex + 1);
-        String minor = leagueClientVersion.substring(majorIndex + 1, minorIndex);
-        String remainder = leagueClientVersion.substring(minorIndex + 1).replaceAll("\\.", "");
+        int majorChildIndex = leagueClientVersion.indexOf('.', majorIndex + 1);
+        String majorChild = leagueClientVersion.substring(majorIndex + 1, majorChildIndex);
+        String remainder = leagueClientVersion.substring(majorChildIndex + 1);
+        int minorIndex = remainder.indexOf('.');
+        String minor = remainder.substring(0, minorIndex);
+        String minorChild = remainder.substring(minorIndex + 1);
         return String.format(
                 "%s.%s.%s+branch.releases-%s-%s.code.public.content.release",
                 major,
-                minor,
-                remainder,
+                majorChild,
+                minor + String.format("%04d", Integer.parseInt(minorChild)),
                 major,
-                minor
+                majorChild
         );
     }
 
@@ -74,6 +78,9 @@ public class PartiesLedge extends AbstractLedgeEndpoint {
         registration.put("simpleInventoryToken", ledge.getInventoryService().getInventoryToken());
         registration.put("summonerToken", ledge.getSummoner().getSummonerToken());
         registration.put("userInfoToken", virtualLeagueClient.get(Authentication.USERINFO).getSimple("userinfo_token"));
+
+        Logger.error(registration);
+
         object.put("registration", registration);
         object.put("serverUtcMillis", 0L);
         object.put("summonerId", userInformation.getUserInformationLeagueAccount().getSummonerId());

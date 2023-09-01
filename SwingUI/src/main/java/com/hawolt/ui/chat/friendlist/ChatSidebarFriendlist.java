@@ -1,8 +1,14 @@
 package com.hawolt.ui.chat.friendlist;
 
+import com.hawolt.LeagueClientUI;
 import com.hawolt.ui.chat.window.IChatWindow;
 import com.hawolt.util.AudioEngine;
+import com.hawolt.util.ColorPalette;
 import com.hawolt.util.panel.ChildUIComponent;
+import com.hawolt.util.ui.FlatButton;
+import com.hawolt.util.ui.HighlightType;
+import com.hawolt.util.ui.Label;
+import com.hawolt.util.ui.TextAlign;
 import com.hawolt.xmpp.core.VirtualRiotXMPPClient;
 import com.hawolt.xmpp.event.EventListener;
 import com.hawolt.xmpp.event.handler.presence.IPresenceListener;
@@ -28,11 +34,15 @@ public class ChatSidebarFriendlist extends ChildUIComponent implements IFriendLi
     private final Map<String, ChatSidebarFriend> map = new HashMap<>();
     private final IChatWindow window;
     private JComponent component;
+    private LeagueClientUI leagueClientUI;
+    private Map<GenericFriend, ChildUIComponent> tmp = new HashMap<>();
 
-    public ChatSidebarFriendlist(IChatWindow window) {
+    public ChatSidebarFriendlist(IChatWindow window, LeagueClientUI leagueClientUI) {
         super(new GridLayout(0, 1, 0, 0));
         this.window = window;
         this.window.setIFriendListComponent(this);
+        this.leagueClientUI = leagueClientUI;
+        setBackground(ColorPalette.BACKGROUND_COLOR);
     }
 
     @Override
@@ -92,7 +102,6 @@ public class ChatSidebarFriendlist extends ChildUIComponent implements IFriendLi
         return map.get(jid);
     }
 
-
     private void handle(AbstractPresence presence) {
         if (!map.containsKey(presence.getFrom())) return;
         getComponent(presence.getFrom()).setLastKnownPresence(presence);
@@ -112,25 +121,22 @@ public class ChatSidebarFriendlist extends ChildUIComponent implements IFriendLi
     }
 
     private void addFriendComponent(GenericFriend friend) {
-        ChatSidebarFriend button = new ChatSidebarFriend(window.getXMPPClient(), friend);
+        ChatSidebarFriend button = new ChatSidebarFriend(window.getXMPPClient(), friend, leagueClientUI);
         button.executeOnClick(() -> window.showChat(friend));
         addFriendComponent(button);
     }
 
-    private Map<GenericFriend, ChildUIComponent> tmp = new HashMap<>();
-
     //TODO ah no no no
     private void addPendingFriendRequest(GenericFriend genericFriend, boolean incoming) {
         ChildUIComponent request = new ChildUIComponent(new BorderLayout(5, 0));
-        request.setBackground(Color.GRAY);
-        JLabel name = new JLabel(genericFriend.getName().toString(), SwingConstants.LEFT);
-        name.setBackground(Color.GRAY);
-        name.setForeground(Color.WHITE);
+        request.setBackground(ColorPalette.BACKGROUND_COLOR);
+        Label name = new Label(genericFriend.getName().toString(), TextAlign.LEFT, true);
         request.add(name, BorderLayout.CENTER);
+        request.setPreferredSize(new Dimension(0, 30));
         ChildUIComponent actions = new ChildUIComponent(new GridLayout(0, incoming ? 2 : 1, 5, 0));
-        actions.setBackground(Color.GRAY);
+        actions.setBackground(ColorPalette.BACKGROUND_COLOR);
         if (incoming) {
-            JButton accept = new JButton("✓");
+            FlatButton accept = new FlatButton("+", TextAlign.CENTER, HighlightType.COMPONENT);
             accept.addActionListener(listener -> {
                 VirtualRiotXMPPClient client = window.getXMPPClient();
                 List<GenericFriend> list = client.getFriendList().find(friend -> genericFriend.getName().equals(friend.getName()));
@@ -139,9 +145,10 @@ public class ChatSidebarFriendlist extends ChildUIComponent implements IFriendLi
                 component.remove(request);
                 component.revalidate();
             });
+            accept.setPreferredSize(new Dimension(30, 0));
             actions.add(accept);
         }
-        JButton remove = new JButton("✕");
+        FlatButton remove = new FlatButton("×", TextAlign.CENTER, HighlightType.COMPONENT);
         remove.addActionListener(listener -> {
             VirtualRiotXMPPClient client = window.getXMPPClient();
             List<GenericFriend> list = client.getFriendList().find(friend -> genericFriend.getName().equals(friend.getName()));
@@ -150,6 +157,7 @@ public class ChatSidebarFriendlist extends ChildUIComponent implements IFriendLi
             component.remove(request);
             component.revalidate();
         });
+        remove.setPreferredSize(new Dimension(30, 0));
         actions.add(remove);
         tmp.put(genericFriend, request);
         request.add(actions, BorderLayout.EAST);

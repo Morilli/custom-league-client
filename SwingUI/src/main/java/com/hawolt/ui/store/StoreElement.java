@@ -9,9 +9,11 @@ import com.hawolt.client.resources.ledge.store.objects.StoreItem;
 import com.hawolt.client.resources.purchasewidget.CurrencyType;
 import com.hawolt.client.resources.purchasewidget.PurchaseWidget;
 import com.hawolt.util.AudioEngine;
+import com.hawolt.util.ColorPalette;
 import com.hawolt.util.panel.ChildUIComponent;
 import org.json.JSONObject;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,15 +26,16 @@ import java.util.List;
 public class StoreElement extends ChildUIComponent implements IStoreElement {
     private final List<StoreButton> buttons = new ArrayList<>();
     private final LeagueClient client;
-    private final StoreImage image;
+    private StoreImage image;
     private final StoreItem item;
     private final IStorePage page;
 
     public StoreElement(LeagueClient client, IStorePage page, StoreItem item) {
         super(new BorderLayout());
+        this.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         this.add(image = new StoreImage(item), BorderLayout.CENTER);
-        this.setBackground(Color.DARK_GRAY);
-        this.setPreferredSize(new Dimension(150, 250));
+        this.setBackground(ColorPalette.BACKGROUND_COLOR);
+        this.setPreferredSize(new Dimension(150, 300));
         this.client = client;
         this.item = item;
         this.page = page;
@@ -44,12 +47,21 @@ public class StoreElement extends ChildUIComponent implements IStoreElement {
             buttons.add(new StoreButton(this, CurrencyType.IP, item.getBlueEssenceCost()));
         if (item.isRiotPointPurchaseAvailable() && item.getRiotPointCost() > 0)
             buttons.add(new StoreButton(this, CurrencyType.RP, item.getRiotPointCost()));
-        ChildUIComponent component = new ChildUIComponent(new GridLayout(0, buttons.isEmpty() ? 1 : buttons.size(), 5, 0));
+        ChildUIComponent mainComponent = new ChildUIComponent(new GridLayout(0, 1, 0, 0));
+        ChildUIComponent nameComponent = new ChildUIComponent(new GridLayout(0, 1, 0, 0));
+        JLabel name = new JLabel(this.item.getName());
+        name.setHorizontalAlignment(SwingConstants.CENTER);
+        name.setForeground(Color.WHITE);
+        nameComponent.setBackground(Color.GRAY);
+        nameComponent.add(name);
+        mainComponent.add(nameComponent);
+        ChildUIComponent buttonComponent = new ChildUIComponent(new GridLayout(0, buttons.isEmpty() ? 1 : buttons.size(), 0, 0));
         for (StoreButton button : buttons) {
-            component.add(button);
+            buttonComponent.add(button);
         }
-        component.setBackground(Color.GRAY);
-        add(component, BorderLayout.SOUTH);
+        buttonComponent.setBackground(Color.DARK_GRAY);
+        mainComponent.add(buttonComponent);
+        add(mainComponent, BorderLayout.SOUTH);
         revalidate();
     }
 

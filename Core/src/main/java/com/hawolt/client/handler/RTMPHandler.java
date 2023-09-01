@@ -25,6 +25,11 @@ public class RTMPHandler {
     private final LeagueRtmpClient virtualLeagueRTMPClient;
     private final LeagueClient client;
 
+    public RTMPHandler(LeagueClient client, String platform, String host, int port) {
+        this.virtualLeagueRTMPClient = new LeagueRtmpClient(platform, host, port);
+        this.client = client;
+    }
+
     public static RTMPHandler build(LeagueClient client) throws IOException {
         VirtualLeagueClient virtualLeagueClient = client.getVirtualLeagueClient();
         IVirtualLeagueClientInstance virtualLeagueClientInstance = virtualLeagueClient.getVirtualLeagueClientInstance();
@@ -44,11 +49,6 @@ public class RTMPHandler {
         virtualLeagueClient.setAuthentication(Authentication.SIPT, sipt);
         String[] lcds = wrapper.get(ConfigValue.LCDS).split(":");
         return new RTMPHandler(client, platform.name(), lcds[0], Integer.parseInt(lcds[1]));
-    }
-
-    public RTMPHandler(LeagueClient client, String platform, String host, int port) {
-        this.virtualLeagueRTMPClient = new LeagueRtmpClient(platform, host, port);
-        this.client = client;
     }
 
     public RTMPHandler connect() {

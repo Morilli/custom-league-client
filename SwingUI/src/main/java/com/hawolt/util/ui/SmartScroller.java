@@ -28,10 +28,6 @@ public class SmartScroller implements AdjustmentListener {
     private int previousValue = -1;
     private int previousMaximum = -1;
 
-    public static void configure(JScrollPane pane) {
-        new SmartScroller(pane);
-    }
-
     /**
      * Convenience constructor.
      * Scroll direction is VERTICAL and viewport position is at the END.
@@ -90,6 +86,10 @@ public class SmartScroller implements AdjustmentListener {
             DefaultCaret caret = (DefaultCaret) textComponent.getCaret();
             caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
         }
+    }
+
+    public static void configure(JScrollPane pane) {
+        new SmartScroller(pane);
     }
 
     @Override

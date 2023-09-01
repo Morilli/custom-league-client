@@ -1,7 +1,5 @@
 package com.hawolt.ui.settings;
 
-import com.hawolt.util.panel.ChildUIComponent;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
@@ -31,17 +29,17 @@ public class SettingsSidebar extends JPanel {
         this.add(panel);
     }
 
-    protected GroupTab addGroupTab(String name) {
-        GroupTab result = new GroupTab(name);
-        panel.add(result);
-        return result;
-    }
-
     protected static JButton newSectionButton(String name) {
         JButton button = new JButton(name);
         button.setFont(sectionFont);
         button.setMaximumSize(sectionDimension);
         return button;
+    }
+
+    protected GroupTab addGroupTab(String name) {
+        GroupTab result = new GroupTab(name);
+        panel.add(result);
+        return result;
     }
 
     protected class GroupTab extends JPanel {

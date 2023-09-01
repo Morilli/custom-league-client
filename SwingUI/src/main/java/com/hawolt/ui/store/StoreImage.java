@@ -63,11 +63,12 @@ public class StoreImage extends JComponent implements IStoreImage, ResourceConsu
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (image == null) return;
-        Dimension dimension = getSize();
-        int x = (dimension.width >> 1) - (image.getWidth() >> 1);
-        int y = (dimension.height >> 1) - (image.getHeight() >> 1);
-        g.drawImage(image, x, y, null);
+        if (image != null) {
+            Dimension dimension = getSize();
+            int x = (dimension.width >> 1) - (image.getWidth() >> 1);
+            int y = (dimension.height >> 1) - (image.getHeight() >> 1);
+            g.drawImage(image, x, y, null);
+        }
     }
 
     @Override

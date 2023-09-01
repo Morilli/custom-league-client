@@ -30,7 +30,7 @@ public class AudioEngine {
                 clip.open(audioInputStream);
                 clip.start();
             } catch (Exception e) {
-                Logger.error("Failed to play {}", filename);
+                Logger.info("Audio files are not distributed via GitHub, failed to play {}", filename);
             }
         });
     }

@@ -1,5 +1,7 @@
 package com.hawolt.ui.runes;
 
+import com.hawolt.util.ColorPalette;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.LinkedList;
@@ -22,6 +24,7 @@ public class RunePanel extends JPanel implements IRuneSelection {
 
     public RunePanel(DDRuneType type, boolean secondary, boolean skip) {
         this.setLayout(new GridLayout(0, 1, 0, 5));
+        this.setBackground(ColorPalette.BACKGROUND_COLOR);
         this.special = secondary && skip;
         this.secondary = secondary;
         this.type = type;
@@ -43,7 +46,7 @@ public class RunePanel extends JPanel implements IRuneSelection {
     @Override
     public void onSelection(int componentIndex, boolean selection) {
         if (!secondary || !selection) return;
-        if(previous == componentIndex) return;
+        if (previous == componentIndex) return;
         int resetTarget = last;
         this.last = previous;
         this.previous = componentIndex;

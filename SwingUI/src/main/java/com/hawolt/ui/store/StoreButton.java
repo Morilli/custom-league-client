@@ -25,6 +25,7 @@ public class StoreButton extends JPanel implements MouseListener, MouseMotionLis
     private final IStoreElement element;
     private final CurrencyType currency;
     private final int price;
+    private final Font font = new Font("Arial", Font.PLAIN, 18);
     private BufferedImage image;
 
     public StoreButton(IStoreElement element, CurrencyType currency, int price) {
@@ -62,8 +63,6 @@ public class StoreButton extends JPanel implements MouseListener, MouseMotionLis
     public int getPrice() {
         return price;
     }
-
-    private final Font font = new Font("Arial", Font.PLAIN, 18);
 
     @Override
     protected void paintComponent(Graphics g) {
