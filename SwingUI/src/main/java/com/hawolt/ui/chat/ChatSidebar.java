@@ -2,6 +2,7 @@ package com.hawolt.ui.chat;
 
 import com.hawolt.LeagueClientUI;
 import com.hawolt.ui.chat.friendlist.ChatSidebarEssentials;
+import com.hawolt.ui.chat.friendlist.ChatSidebarFooter;
 import com.hawolt.ui.chat.friendlist.ChatSidebarFriendlist;
 import com.hawolt.ui.chat.profile.ChatSidebarProfile;
 import com.hawolt.util.panel.ChildUIComponent;
@@ -17,6 +18,7 @@ import java.awt.*;
 
 public class ChatSidebar extends ChildUIComponent {
     private final ChatSidebarEssentials essentials;
+    private final ChatSidebarFooter footer;
     private final ChatSidebarProfile profile;
     private final ChatSidebarFriendlist list;
 
@@ -34,6 +36,7 @@ public class ChatSidebar extends ChildUIComponent {
         ChildUIComponent bundle = new ChildUIComponent(new BorderLayout());
         bundle.add(essentials = new ChatSidebarEssentials(leagueClientUI, list), BorderLayout.NORTH);
         bundle.add(scrollPane, BorderLayout.CENTER);
+        bundle.add(footer = new ChatSidebarFooter(leagueClientUI.getSettingsUI()), BorderLayout.SOUTH);
         this.add(bundle, BorderLayout.CENTER);
     }
 

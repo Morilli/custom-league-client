@@ -5,14 +5,13 @@ import com.hawolt.generic.data.Platform;
 import com.hawolt.generic.token.impl.StringTokenSupplier;
 import com.hawolt.logger.Logger;
 import com.hawolt.rtmp.LeagueRtmpClient;
-import com.hawolt.virtual.leagueclient.authentication.Session;
-import com.hawolt.virtual.leagueclient.authentication.Sipt;
-import com.hawolt.virtual.leagueclient.authentication.Userinfo;
+import com.hawolt.virtual.leagueclient.authentication.impl.Sipt;
 import com.hawolt.virtual.leagueclient.client.Authentication;
 import com.hawolt.virtual.leagueclient.client.VirtualLeagueClient;
 import com.hawolt.virtual.leagueclient.instance.IVirtualLeagueClientInstance;
 import com.hawolt.virtual.riotclient.instance.IVirtualRiotClientInstance;
 import com.hawolt.yaml.ConfigValue;
+import com.hawolt.yaml.IYamlSupplier;
 import com.hawolt.yaml.YamlWrapper;
 
 import java.io.IOException;
@@ -29,14 +28,18 @@ public class RTMPHandler {
     public static RTMPHandler build(LeagueClient client) throws IOException {
         VirtualLeagueClient virtualLeagueClient = client.getVirtualLeagueClient();
         IVirtualLeagueClientInstance virtualLeagueClientInstance = virtualLeagueClient.getVirtualLeagueClientInstance();
-        YamlWrapper wrapper = virtualLeagueClient.getYamlWrapper();
+        IYamlSupplier yamlSupplier = client.getVirtualLeagueClientInstance().getYamlSupplier();
+        YamlWrapper wrapper = yamlSupplier.getYamlResources(client.getPlayerPlatform());
         Platform platform = virtualLeagueClientInstance.getPlatform();
-        Sipt sipt = new Sipt(platform, wrapper.get(ConfigValue.LEDGE));
+        Sipt sipt = new Sipt(
+                client.getVirtualRiotClientInstance().getCookieSupplier(),
+                client.getVirtualLeagueClientInstance().getPublicClientConfig()
+        );
         IVirtualRiotClientInstance virtualRiotClientInstance = virtualLeagueClient.getVirtualRiotClientInstance();
         sipt.authenticate(
                 virtualRiotClientInstance.getGateway(),
-                virtualLeagueClientInstance.getLocalLeagueFileVersion(),
-                (Session) virtualLeagueClient.get(Authentication.SESSION)
+                virtualLeagueClientInstance.getLeagueClientUserAgent("rcp-lol-be-login"),
+                virtualLeagueClient.get(Authentication.SESSION)
         );
         virtualLeagueClient.setAuthentication(Authentication.SIPT, sipt);
         String[] lcds = wrapper.get(ConfigValue.LCDS).split(":");
@@ -52,11 +55,12 @@ public class RTMPHandler {
         VirtualLeagueClient virtualLeagueClient = client.getVirtualLeagueClient();
         StringTokenSupplier rtmpSupplier = StringTokenSupplier.merge(
                 "rtmp",
-                (Userinfo) virtualLeagueClient.get(Authentication.USERINFO),
+                virtualLeagueClient.get(Authentication.USERINFO),
                 virtualLeagueClient.getVirtualLeagueClientInstance().getLeagueClientSupplier(),
-                (Session) virtualLeagueClient.get(Authentication.SESSION),
-                (Sipt) virtualLeagueClient.get(Authentication.SIPT)
+                virtualLeagueClient.get(Authentication.SESSION),
+                virtualLeagueClient.get(Authentication.SIPT)
         );
+
         this.virtualLeagueRTMPClient.connect(client.getVirtualLeagueClient().getVirtualRiotClient().getUsername(), rtmpSupplier);
         return this;
     }

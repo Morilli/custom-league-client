@@ -16,8 +16,8 @@ import java.io.IOException;
 public class Loadout extends AbstractLedgeEndpoint {
     private final InventoryServiceLedge inventoryServiceLedge;
 
-    public Loadout(LeagueClient leagueClient, String base) {
-        super(leagueClient, base);
+    public Loadout(LeagueClient leagueClient) {
+        super(leagueClient);
         this.inventoryServiceLedge = leagueClient.getLedge().getInventoryService();
     }
 
@@ -185,6 +185,6 @@ public class Loadout extends AbstractLedgeEndpoint {
 
     @Override
     public String auth() {
-        return String.join(" ", "Bearer", client.getVirtualLeagueClientInstance().getLeagueClientSupplier().get("lol.access_token", true));
+        return String.join(" ", "Bearer", client.getVirtualLeagueClientInstance().getLeagueClientSupplier().getSimple("access_token"));
     }
 }

@@ -1,14 +1,16 @@
 package com.hawolt.client.resources.purchasewidget;
 
-import com.hawolt.authentication.WebOrigin;
 import com.hawolt.client.LeagueClient;
 import com.hawolt.client.resources.UndocumentedEndpoint;
 import com.hawolt.client.resources.ledge.store.objects.InventoryType;
 import com.hawolt.generic.Constant;
+import com.hawolt.generic.token.impl.StringTokenSupplier;
 import com.hawolt.http.OkHttp3Client;
-import com.hawolt.virtual.leagueclient.authentication.OAuthToken;
+import com.hawolt.http.layer.IResponse;
+import com.hawolt.virtual.clientconfig.impl.redge.RedgeType;
+import com.hawolt.virtual.leagueclient.authentication.AbstractTokenSetup;
+import com.hawolt.virtual.leagueclient.instance.ClientTokenStorage;
 import com.hawolt.virtual.leagueclient.instance.IVirtualLeagueClientInstance;
-import com.hawolt.yaml.ConfigValue;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,7 +24,11 @@ import java.io.IOException;
 
 public class PurchaseWidget extends UndocumentedEndpoint {
     public PurchaseWidget(LeagueClient client) {
-        super(client, client.getVirtualLeagueClient().getYamlWrapper().get(ConfigValue.LEDGE));
+        super(client);
+        this.base = client.getVirtualLeagueClientInstance()
+                .getPublicClientConfig()
+                .getRedgeConfig()
+                .getRedgeValue(RedgeType.SERVICES);
     }
 
     public String purchase(CurrencyType currency, InventoryType type, long itemId, long price) throws IOException {
@@ -38,10 +44,8 @@ public class PurchaseWidget extends UndocumentedEndpoint {
                 "LeagueClientUxRender.exe"
         );
         String agent = String.format("LeagueOfLegendsClient/%s (%s)", version, rcp());
-        OAuthToken auth = client.getVirtualLeagueClient()
-                .getWebOriginOAuthTokenMap()
-                .get(WebOrigin.LOL_LOGIN);
-        String bearer = auth.get("oauthtoken.access_token", true);
+        StringTokenSupplier supplier = client.getVirtualLeagueClientInstance().getLeagueClientSupplier();
+        String bearer = supplier.getSimple("access_token");
         JSONObject object = new JSONObject();
         JSONArray items = new JSONArray();
         JSONObject item = new JSONObject();
@@ -65,12 +69,8 @@ public class PurchaseWidget extends UndocumentedEndpoint {
                 .addHeader("Accept", "application/json")
                 .post(RequestBody.create(object.toString(), Constant.APPLICATION_JSON))
                 .build();
-        Call call = OkHttp3Client.perform(request, gateway);
-        try (Response response = call.execute()) {
-            try (ResponseBody body = response.body()) {
-                return body.string();
-            }
-        }
+        IResponse response = OkHttp3Client.execute(request, gateway);
+        return response.asString();
     }
 
     @Override

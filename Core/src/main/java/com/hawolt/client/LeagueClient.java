@@ -7,6 +7,7 @@ import com.hawolt.client.handler.RMSHandler;
 import com.hawolt.client.handler.RTMPHandler;
 import com.hawolt.client.handler.XMPPHandler;
 import com.hawolt.client.resources.ledge.LedgeEndpoint;
+import com.hawolt.client.resources.ledge.gsm.objects.ActiveGameInformation;
 import com.hawolt.client.resources.platform.PlatformEndpoint;
 import com.hawolt.client.resources.purchasewidget.PurchaseWidget;
 import com.hawolt.generic.data.Platform;
@@ -57,14 +58,15 @@ public class LeagueClient implements Cacheable, Consumer<CachedValueLoader<?>> {
     }
 
     private void configure() {
-        this.ledge = new LedgeEndpoint(this);
         this.purchaseWidget = new PurchaseWidget(this);
         this.platform = new PlatformEndpoint(this);
+        this.ledge = new LedgeEndpoint(this);
         this.cache();
     }
 
     private void cache() {
         ExecutorService service = Executors.newCachedThreadPool();
+        service.execute(new ActiveGameInformation(this));
         service.execute(new CachedValueLoader<>(CacheType.INVENTORY_TOKEN, () -> ledge.getInventoryService().getInventoryToken(), this));
         service.shutdown();
     }

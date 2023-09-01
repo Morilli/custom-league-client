@@ -7,6 +7,7 @@ import com.hawolt.client.resources.ledge.store.objects.StoreItem;
 import com.hawolt.client.resources.ledge.store.objects.Wallet;
 import com.hawolt.generic.Constant;
 import com.hawolt.http.OkHttp3Client;
+import com.hawolt.http.layer.IResponse;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,8 +22,8 @@ import java.util.List;
  **/
 
 public class StoreLedge extends AbstractLedgeEndpoint {
-    public StoreLedge(LeagueClient client, String base) {
-        super(client, base);
+    public StoreLedge(LeagueClient client) {
+        super(client);
     }
 
     public List<StoreItem> catalogV1() throws IOException {
@@ -80,13 +81,8 @@ public class StoreLedge extends AbstractLedgeEndpoint {
         Request request = jsonRequest(uri)
                 .get()
                 .build();
-        Call call = OkHttp3Client.perform(request, gateway);
-        try (Response response = call.execute()) {
-            try (ResponseBody body = response.body()) {
-                String plain = body.string();
-                return new Wallet(new JSONObject(plain));
-            }
-        }
+        IResponse response = OkHttp3Client.execute(request, gateway);
+        return new Wallet(new JSONObject(response.asString()));
     }
 
     @Override
@@ -106,6 +102,6 @@ public class StoreLedge extends AbstractLedgeEndpoint {
 
     @Override
     public String auth() {
-        return String.join(" ", "Bearer", client.getVirtualLeagueClientInstance().getLeagueClientSupplier().get("lol.access_token", true));
+        return String.join(" ", "Bearer", client.getVirtualLeagueClientInstance().getLeagueClientSupplier().getSimple("access_token"));
     }
 }

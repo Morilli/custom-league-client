@@ -4,17 +4,22 @@ import com.hawolt.client.LeagueClient;
 import com.hawolt.client.resources.ledge.store.objects.StoreItem;
 import com.hawolt.client.resources.ledge.store.objects.StoreSortOrder;
 import com.hawolt.client.resources.ledge.store.objects.StoreSortProperty;
+import com.hawolt.ui.impl.Debouncer;
+import com.hawolt.ui.impl.JHintTextField;
 import com.hawolt.util.AudioEngine;
 import com.hawolt.util.panel.ChildUIComponent;
-import com.hawolt.util.ui.DynamicGridLayout;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created: 09/08/2023 18:45
@@ -27,16 +32,16 @@ public class StorePage extends ChildUIComponent implements IStorePage {
     private final LeagueClient client;
     private final ChildUIComponent grid;
     private final List<Long> owned;
-
     private final StoreElementComparator comparator;
+    private final Debouncer debouncer = new Debouncer();
+    private String filter = "";
 
     public StorePage(LeagueClient client, List<Long> owned, StoreSortProperty... properties) {
         super(new BorderLayout(0, 5));
         this.client = client;
         this.owned = owned;
         ChildUIComponent component = new ChildUIComponent(new BorderLayout());
-        grid = new ChildUIComponent(new DynamicGridLayout(0, 5, 5, 5));
-        grid.setBackground(Color.GRAY);
+        grid = new ChildUIComponent(new GridLayout(0, 5, 5, 5));
         add(component, BorderLayout.NORTH);
         component.add(grid, BorderLayout.NORTH);
         JScrollPane scrollPane = new JScrollPane(component);
@@ -46,6 +51,33 @@ public class StorePage extends ChildUIComponent implements IStorePage {
         setBorder(new EmptyBorder(5, 5, 5, 0));
 
         comparator = new StoreElementComparator(properties.length > 0 ? properties[0] : null, StoreSortOrder.ASCENDING);
+        JPanel inputPanel = createInputPanel(properties);
+        this.add(inputPanel, BorderLayout.NORTH);
+    }
+
+    @NotNull
+    private JPanel createInputPanel(StoreSortProperty[] properties) {
+        JComboBox<StoreSortOption> sortBox = createStoreSortOptionJComboBox(properties);
+
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new GridLayout(1,2));
+        inputPanel.add(sortBox);
+        JHintTextField search = new JHintTextField("Search...");
+
+        search.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                filter = search.getText().toLowerCase();
+                debouncer.debounce("searchField", () -> updateElements(), 200, TimeUnit.MILLISECONDS);
+            }
+        });
+
+        inputPanel.add(search);
+        return inputPanel;
+    }
+
+    @NotNull
+    private JComboBox<StoreSortOption> createStoreSortOptionJComboBox(StoreSortProperty[] properties) {
         JComboBox<StoreSortOption> sortBox = new JComboBox<>();
         for (StoreSortProperty property : properties) {
             sortBox.addItem(new StoreSortOption(property, StoreSortOrder.ASCENDING));
@@ -58,7 +90,7 @@ public class StorePage extends ChildUIComponent implements IStorePage {
             comparator.setOrder(option.order());
             updateElements();
         });
-        this.add(sortBox, BorderLayout.NORTH);
+        return sortBox;
     }
 
     public void append(StoreItem item) {
@@ -83,6 +115,7 @@ public class StorePage extends ChildUIComponent implements IStorePage {
         map.values()
                 .stream()
                 .sorted(this.comparator)
+                .filter(champion -> champion.getItem().getName().toLowerCase().contains(filter))
                 .forEach(this.grid::add);
         revalidate();
         repaint();

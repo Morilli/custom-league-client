@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TFTQueueLobby extends ChildUIComponent {
     public TFTQueueLobby(LeagueClientUI leagueClientUI, Container parent, CardLayout layout) {
         super(new BorderLayout());
-        Loadout loadout = new Loadout(leagueClientUI.getLeagueClient(), leagueClientUI.getLeagueClient().getLedge().getInventoryService().base());
+        Loadout loadout = new Loadout(leagueClientUI.getLeagueClient());
         JButton close = new JButton("Return to previous Component");
         close.addActionListener(listener -> layout.show(parent, "modes"));
         add(close, BorderLayout.NORTH);

@@ -17,8 +17,8 @@ import java.io.IOException;
  **/
 
 public class LeagueLedge extends AbstractLedgeEndpoint {
-    public LeagueLedge(LeagueClient client, String base) {
-        super(client, base);
+    public LeagueLedge(LeagueClient client) {
+        super(client);
     }
 
     public String getRankedOverviewToken() throws IOException {

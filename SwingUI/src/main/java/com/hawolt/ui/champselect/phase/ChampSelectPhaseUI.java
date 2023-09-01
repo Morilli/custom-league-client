@@ -10,6 +10,7 @@ import com.hawolt.util.panel.ChildUIComponent;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 /**
  * Created: 06/08/2023 18:58
@@ -26,8 +27,7 @@ public class ChampSelectPhaseUI extends ChildUIComponent {
 
     private final ChampSelectSetting setting;
     private final ChampSelectChatUI chatUI;
-
-    private final JButton button;
+    private final JButton dodge;
 
     public ChampSelectPhaseUI(ChampSelect champSelect, IChampSelection selection) {
         super(new BorderLayout());
@@ -39,9 +39,12 @@ public class ChampSelectPhaseUI extends ChildUIComponent {
         ChildUIComponent component = new ChildUIComponent(new BorderLayout());
         component.add(setting = new ChampSelectSetting(champSelect), BorderLayout.NORTH);
         component.add(chatUI = new ChampSelectChatUI(champSelect), BorderLayout.CENTER);
-        component.add(button = new JButton("Dodge"), BorderLayout.SOUTH);
-        this.button.setActionCommand("DODGE");
 
+        ChildUIComponent buttons = new ChildUIComponent(new GridLayout(0, 1, 0, 0));
+        component.add(buttons, BorderLayout.SOUTH);
+        dodge = new JButton("Dodge");
+        dodge.setActionCommand("DODGE");
+        buttons.add(dodge);
         this.add(component, BorderLayout.SOUTH);
     }
 
@@ -58,10 +61,6 @@ public class ChampSelectPhaseUI extends ChildUIComponent {
         this.layout.show(card, name);
     }
 
-    public JButton getButton() {
-        return button;
-    }
-
     public ChampSelectPickPhaseUI getPickPhaseUI() {
         return pickPhaseUI;
     }
@@ -72,5 +71,9 @@ public class ChampSelectPhaseUI extends ChildUIComponent {
 
     public ChampSelectChatUI getChatUI() {
         return chatUI;
+    }
+
+    public void configure(ActionListener listener) {
+        this.dodge.addActionListener(listener);
     }
 }

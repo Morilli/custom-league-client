@@ -6,6 +6,7 @@ import com.hawolt.client.resources.ledge.summoner.objects.Summoner;
 import com.hawolt.client.resources.ledge.summoner.objects.SummonerValidation;
 import com.hawolt.generic.Constant;
 import com.hawolt.http.OkHttp3Client;
+import com.hawolt.http.layer.IResponse;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,8 +21,8 @@ import java.nio.charset.StandardCharsets;
  **/
 
 public class SummonerLedge extends AbstractLedgeEndpoint {
-    public SummonerLedge(LeagueClient client, String base) {
-        super(client, base);
+    public SummonerLedge(LeagueClient client) {
+        super(client);
     }
 
     public Summoner resolveSummonerByPUUD(String name) throws IOException {
@@ -122,13 +123,8 @@ public class SummonerLedge extends AbstractLedgeEndpoint {
         Request request = jsonRequest(url)
                 .post(RequestBody.create(object.toString(), Constant.APPLICATION_JSON))
                 .build();
-        Call call = OkHttp3Client.perform(request, gateway);
-        try (Response response = call.execute()) {
-            try (ResponseBody body = response.body()) {
-                String plain = body.string();
-                return new Summoner(new JSONObject(plain));
-            }
-        }
+        IResponse response = OkHttp3Client.execute(request, gateway);
+        return new Summoner(new JSONObject(response.asString()));
     }
 
 

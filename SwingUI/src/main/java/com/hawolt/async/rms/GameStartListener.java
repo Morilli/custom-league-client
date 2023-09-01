@@ -1,9 +1,10 @@
 package com.hawolt.async.rms;
 
+import com.hawolt.LeagueClientUI;
+import com.hawolt.client.Launcher;
 import com.hawolt.generic.data.Platform;
 import com.hawolt.rms.data.subject.service.IServiceMessageListener;
 import com.hawolt.rms.data.subject.service.RiotMessageServiceMessage;
-import com.hawolt.util.Launcher;
 import org.json.JSONObject;
 
 /**
@@ -12,21 +13,20 @@ import org.json.JSONObject;
  **/
 
 public class GameStartListener implements IServiceMessageListener<RiotMessageServiceMessage> {
+    private final LeagueClientUI leagueClientUI;
     private final Platform platform;
 
-    public GameStartListener(Platform platform) {
-        this.platform = platform;
+    public GameStartListener(LeagueClientUI leagueClientUI) {
+        this.platform = leagueClientUI.getLeagueClient().getPlayerPlatform();
+        this.leagueClientUI = leagueClientUI;
     }
 
     @Override
     public void onMessage(RiotMessageServiceMessage riotMessageServiceMessage) {
-        JSONObject object = riotMessageServiceMessage.getPayload().getPayload();
-        String ip = object.getString("serverIp");
-        String gameMode = object.getString("gameMode");
-        String port = String.valueOf(object.getInt("serverPort"));
-        String encryptionKey = object.getString("encryptionKey");
-        String gameId = String.valueOf(object.getLong("gameId"));
-        String summonerId = String.valueOf(object.getLong("summonerId"));
-        Launcher.launch(ip, port, encryptionKey, summonerId, gameId, platform, gameMode);
+        boolean gameStart = riotMessageServiceMessage.getPayload().getResource().endsWith("player-credentials-update");
+        if (!gameStart) return;
+        Launcher.launch(platform, riotMessageServiceMessage.getPayload().getPayload());
+        leagueClientUI.getChatSidebar().getEssentials().disableQueueState();
     }
+
 }

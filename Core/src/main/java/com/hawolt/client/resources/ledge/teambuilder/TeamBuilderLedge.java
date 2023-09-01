@@ -22,8 +22,8 @@ public class TeamBuilderLedge extends AbstractLedgeEndpoint {
 
     private PartiesRegistration current;
 
-    public TeamBuilderLedge(LeagueClient client, String base) {
-        super(client, base);
+    public TeamBuilderLedge(LeagueClient client) {
+        super(client);
     }
 
     public MatchContext indicateAfkReadiness() throws IOException {

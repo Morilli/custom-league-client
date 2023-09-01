@@ -5,7 +5,6 @@ import com.hawolt.client.resources.UndocumentedEndpoint;
 import com.hawolt.generic.data.Platform;
 import com.hawolt.generic.token.impl.StringTokenSupplier;
 import com.hawolt.version.IVersionSupplier;
-import com.hawolt.virtual.leagueclient.authentication.Session;
 import com.hawolt.virtual.leagueclient.client.Authentication;
 import com.hawolt.virtual.leagueclient.userinfo.UserInformation;
 
@@ -20,9 +19,9 @@ public abstract class AbstractPlatformEndpoint extends UndocumentedEndpoint {
     protected final UserInformation userInformation;
     protected final Platform platform;
 
-    public AbstractPlatformEndpoint(LeagueClient client, String base) {
-        super(client, base);
-        this.tokenSupplier = (Session) virtualLeagueClient.get(Authentication.SESSION);
+    public AbstractPlatformEndpoint(LeagueClient client) {
+        super(client);
+        this.tokenSupplier = virtualLeagueClient.get(Authentication.SESSION);
         this.platform = client.getVirtualLeagueClientInstance().getPlatform();
         this.userInformation = client.getVirtualLeagueClientInstance().getUserInformation();
         this.versionSupplier = client.getVirtualLeagueClientInstance().getLocalLeagueFileVersion();

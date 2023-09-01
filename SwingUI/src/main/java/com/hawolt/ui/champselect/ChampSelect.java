@@ -39,6 +39,7 @@ public class ChampSelect extends ChildUIComponent implements PacketCallback, ICh
     private final ChampSelectHeaderUI headerUI;
     private final ChampSelectPhaseUI phaseUI;
 
+    private LeagueClientUI leagueClientUI;
     private LeagueRtmpClient rtmpClient;
     private LeagueClient leagueClient;
 
@@ -48,21 +49,22 @@ public class ChampSelect extends ChildUIComponent implements PacketCallback, ICh
         this.add(headerUI = new ChampSelectHeaderUI(), BorderLayout.NORTH);
         this.add(teamOneUI = new ChampSelectSidebarUI(), BorderLayout.WEST);
         this.add(teamTwoUI = new ChampSelectSidebarUI(), BorderLayout.EAST);
-        this.phaseUI.getButton().addActionListener(this);
+        this.phaseUI.configure(this);
         ResourceLoader.loadResource("https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-summary.json", this);
     }
 
-    public ChampSelect(LeagueClient client) {
+    public ChampSelect(LeagueClientUI leagueClientUI) {
         super(new BorderLayout());
-        this.leagueClient = client;
+        this.leagueClientUI = leagueClientUI;
+        this.leagueClient = leagueClientUI.getLeagueClient();
         this.add(phaseUI = new ChampSelectPhaseUI(this, this), BorderLayout.CENTER);
         this.add(headerUI = new ChampSelectHeaderUI(), BorderLayout.NORTH);
         this.add(teamOneUI = new ChampSelectSidebarUI(), BorderLayout.WEST);
         this.add(teamTwoUI = new ChampSelectSidebarUI(), BorderLayout.EAST);
         this.phaseUI.getPickPhaseUI().getButton().addActionListener(this);
         this.phaseUI.getBanPhaseUI().getButton().addActionListener(this);
-        this.phaseUI.getButton().addActionListener(this);
-        this.rtmpClient = client.getRTMPClient();
+        this.phaseUI.configure(this);
+        this.rtmpClient = leagueClient.getRTMPClient();
         this.rtmpClient.setDefaultCallback(this);
         ResourceLoader.loadResource("https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-summary.json", this);
     }
@@ -224,6 +226,7 @@ public class ChampSelect extends ChildUIComponent implements PacketCallback, ICh
                 switch (command) {
                     case "DODGE" -> {
                         this.rtmpClient.getTeamBuilderService().quitGameV2Asynchronous(this);
+                        this.leagueClientUI.getChatSidebar().getEssentials().disableQueueState();
                         this.headerUI.getTimerUI().stop();
                         this.phaseUI.getChatUI().reset();
                         this.resetChampSelectState();

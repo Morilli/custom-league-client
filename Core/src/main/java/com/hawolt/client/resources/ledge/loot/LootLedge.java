@@ -7,7 +7,10 @@ import com.hawolt.client.resources.ledge.loot.objects.LootAction;
 import com.hawolt.client.resources.ledge.loot.objects.PlayerLoot;
 import com.hawolt.generic.Constant;
 import com.hawolt.http.OkHttp3Client;
-import okhttp3.*;
+import com.hawolt.http.layer.IResponse;
+import okhttp3.HttpUrl;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -20,8 +23,8 @@ import java.util.UUID;
  **/
 
 public class LootLedge extends AbstractLedgeEndpoint {
-    public LootLedge(LeagueClient client, String base) {
-        super(client, base);
+    public LootLedge(LeagueClient client) {
+        super(client);
     }
 
     //TODO hardcoded location fix
@@ -47,7 +50,22 @@ public class LootLedge extends AbstractLedgeEndpoint {
         object.put("clientId", "LolClient-LEdge");
         object.put("playerId", client.getVirtualLeagueClientInstance().getUserInformation().getUserInformationLeagueAccount().getSummonerId());
         object.put("puuid", client.getVirtualLeagueClientInstance().getUserInformation().getSub());
-        object.put("recipeName", String.join("_", loot.getLootName().substring(0, loot.getLootName().lastIndexOf("_")), action.name().toLowerCase()));
+        if (loot.getLootName().contains("CHAMPION_SKIN")) {
+            object.put("recipeName", String.join(
+                    "_",
+                    loot.getLootName().substring(
+                            loot.getLootName().indexOf("_") + 1,
+                            loot.getLootName().lastIndexOf("_")
+                    ),
+                    LootAction.DISENCHANT.name().toLowerCase()
+            ));
+        } else {
+            object.put("recipeName", String.join(
+                    "_",
+                    loot.getLootName().substring(0, loot.getLootName().lastIndexOf("_")),
+                    LootAction.DISENCHANT.name().toLowerCase())
+            );
+        }
         object.put("repeat", repeat);
         JSONArray array = new JSONArray();
         JSONObject instance = new JSONObject();
@@ -57,21 +75,16 @@ public class LootLedge extends AbstractLedgeEndpoint {
         if (action == LootAction.UPGRADE) {
             JSONObject upgrade = new JSONObject();
             String type = loot.getLootName().contains("SKIN") ? "SKIN" : "CHAMPION";
-            instance.put("lootName", String.join("_", type, action.name().toLowerCase()));
-            instance.put("refId", "");
+            upgrade.put("lootName", String.join("_", type, action.name().toLowerCase()));
+            upgrade.put("refId", "");
             array.put(upgrade);
         }
         object.put("lootNameRefIds", array);
         Request request = jsonRequest(url)
                 .post(RequestBody.create(object.toString(), Constant.APPLICATION_JSON))
                 .build();
-        Call call = OkHttp3Client.perform(request, gateway);
-        try (Response response = call.execute()) {
-            try (ResponseBody body = response.body()) {
-                String plain = body.string();
-                return new JSONObject(plain);
-            }
-        }
+        IResponse response = OkHttp3Client.execute(request, gateway);
+        return new JSONObject(response.asString());
     }
 
     public PlayerLoot get() throws IOException {
@@ -91,14 +104,8 @@ public class LootLedge extends AbstractLedgeEndpoint {
                 .addQueryParameter("lastQueryUpdate", timestamp)
                 .build();
         Request request = jsonRequest(url).get().build();
-        Call call = OkHttp3Client.perform(request, gateway);
-        try (Response response = call.execute()) {
-            try (ResponseBody body = response.body()) {
-                String plain = body.string();
-                JSONObject object = new JSONObject(plain);
-                return new PlayerLoot(object.getJSONArray("playerLoot"));
-            }
-        }
+        IResponse response = OkHttp3Client.execute(request, gateway);
+        return new PlayerLoot(new JSONObject(response.asString()).getJSONArray("playerLoot"));
     }
 
     @Override

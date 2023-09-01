@@ -5,7 +5,7 @@ import com.hawolt.client.resources.UndocumentedEndpoint;
 import com.hawolt.generic.data.Platform;
 import com.hawolt.generic.token.impl.StringTokenSupplier;
 import com.hawolt.version.IVersionSupplier;
-import com.hawolt.virtual.leagueclient.authentication.Session;
+import com.hawolt.virtual.clientconfig.impl.redge.RedgeType;
 import com.hawolt.virtual.leagueclient.client.Authentication;
 import com.hawolt.virtual.leagueclient.userinfo.UserInformation;
 import okhttp3.HttpUrl;
@@ -22,25 +22,21 @@ public abstract class AbstractLedgeEndpoint extends UndocumentedEndpoint {
     protected final UserInformation userInformation;
     protected final Platform platform;
 
-    public AbstractLedgeEndpoint(LeagueClient client, String base) {
-        super(client, base);
-        this.tokenSupplier = (Session) virtualLeagueClient.get(Authentication.SESSION);
+    public AbstractLedgeEndpoint(LeagueClient client) {
+        super(client);
+        this.tokenSupplier = virtualLeagueClient.get(Authentication.SESSION);
         this.platform = client.getVirtualLeagueClientInstance().getPlatform();
         this.userInformation = client.getVirtualLeagueClientInstance().getUserInformation();
         this.leagueVersionSupplier = client.getVirtualLeagueClientInstance().getLocalLeagueFileVersion();
         this.gameVersionSupplier = client.getVirtualLeagueClientInstance().getLocalGameFileVersion();
-        //TODO why does LAN & LAS have a custom ledge url
-        if (client.getVirtualLeagueClientInstance().getPlatform() == Platform.LA1) {
-            this.base = "https://lan-red.lol.sgp.pvp.net";
-        } else if (client.getVirtualLeagueClientInstance().getPlatform() == Platform.LA2) {
-            this.base = "https://las-red.lol.sgp.pvp.net";
-        } else {
-            this.base = base;
-        }
+        this.base = client.getVirtualLeagueClientInstance()
+                .getPublicClientConfig()
+                .getRedgeConfig()
+                .getRedgeValue(RedgeType.SERVICES);
     }
 
     public String auth() {
-        return String.format("Bearer %s", tokenSupplier.get("session.session_token", true));
+        return String.format("Bearer %s", tokenSupplier.getSimple("session_token"));
     }
 
     public String agent() {
@@ -54,6 +50,7 @@ public abstract class AbstractLedgeEndpoint extends UndocumentedEndpoint {
         return internalJsonRequest(new Request.Builder()
                 .url(url));
     }
+
     public Request.Builder jsonRequest(String uri) {
         return internalJsonRequest(new Request.Builder()
                 .url(uri));

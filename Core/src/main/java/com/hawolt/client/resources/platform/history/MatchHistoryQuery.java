@@ -10,7 +10,7 @@ import com.hawolt.generic.data.Platform;
 import com.hawolt.generic.token.impl.StringTokenSupplier;
 import com.hawolt.http.OkHttp3Client;
 import com.hawolt.version.IVersionSupplier;
-import com.hawolt.virtual.leagueclient.authentication.Session;
+import com.hawolt.virtual.clientconfig.impl.redge.RedgeType;
 import com.hawolt.virtual.leagueclient.client.Authentication;
 import okhttp3.Call;
 import okhttp3.Request;
@@ -35,11 +35,15 @@ public class MatchHistoryQuery extends AbstractPlatformEndpoint {
 
     private final Platform platform;
 
-    public MatchHistoryQuery(LeagueClient client, String base) {
-        super(client, base);
-        this.tokenSupplier = (Session) virtualLeagueClient.get(Authentication.SESSION);
+    public MatchHistoryQuery(LeagueClient client) {
+        super(client);
+        this.tokenSupplier = virtualLeagueClient.get(Authentication.SESSION);
         this.platform = client.getVirtualLeagueClientInstance().getPlatform();
         this.versionSupplier = client.getVirtualLeagueClientInstance().getLocalLeagueFileVersion();
+        this.base = client.getVirtualLeagueClientInstance()
+                .getPublicClientConfig()
+                .getRedgeConfig()
+                .getRedgeValue(RedgeType.MATCH_HISTORY_QUERY);
     }
 
     public MatchOutcomeDetails getGameDetails(MatchGameMode matchGameMode, long gameId) throws IOException {

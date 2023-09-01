@@ -18,8 +18,8 @@ import java.io.IOException;
  **/
 
 public class PerksLedge extends AbstractLedgeEndpoint {
-    public PerksLedge(LeagueClient client, String base) {
-        super(client, base);
+    public PerksLedge(LeagueClient client) {
+        super(client);
     }
 
     private static String escape(String raw) {

@@ -15,11 +15,10 @@ public abstract class UndocumentedEndpoint implements IUndocumentedEndpoint {
     protected final Gateway gateway;
     protected String base;
 
-    public UndocumentedEndpoint(LeagueClient client, String base) {
+    public UndocumentedEndpoint(LeagueClient client) {
         this.gateway = client.getVirtualLeagueClient().getVirtualRiotClientInstance().getGateway();
         this.virtualLeagueClient = client.getVirtualLeagueClient();
         this.client = client;
-        this.base = base;
     }
 
     @Override

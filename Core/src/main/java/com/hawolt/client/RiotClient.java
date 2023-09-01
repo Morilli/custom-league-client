@@ -3,6 +3,11 @@ package com.hawolt.client;
 import com.hawolt.client.handler.RMSHandler;
 import com.hawolt.client.handler.RTMPHandler;
 import com.hawolt.client.handler.XMPPHandler;
+import com.hawolt.client.misc.ClientConfiguration;
+import com.hawolt.exception.CaptchaException;
+import com.hawolt.virtual.client.LoginStateConsumer;
+import com.hawolt.virtual.client.RiotClientException;
+import com.hawolt.virtual.client.captcha.ManualCaptchaSupplier;
 import com.hawolt.virtual.leagueclient.client.VirtualLeagueClient;
 import com.hawolt.virtual.leagueclient.exception.LeagueException;
 import com.hawolt.virtual.leagueclient.instance.VirtualLeagueClientInstance;
@@ -42,7 +47,7 @@ public class RiotClient implements BiConsumer<VirtualLeagueClient, Throwable> {
             try {
                 finalize(client);
                 callback.onClient(client);
-            } catch (IOException | URISyntaxException e) {
+            } catch (Exception e) {
                 callback.onLoginFlowException(e);
             }
         }
@@ -54,23 +59,26 @@ public class RiotClient implements BiConsumer<VirtualLeagueClient, Throwable> {
         if (configuration.getComplete()) client.setRTMP(RTMPHandler.build(client).connect());
     }
 
-    private void loginAndCreate() {
-        VirtualRiotClientInstance virtualRiotClientInstance = VirtualRiotClientInstance.create(
+    private VirtualRiotClientInstance getRiotClientInstance() {
+        return VirtualRiotClientInstance.create(
                 configuration.getGateway(),
                 configuration.getCookieSupplier(),
-                false
+                new LoginStateConsumer()
         );
+    }
+
+    private void loginAndCreate() {
         try {
-            login(configuration, virtualRiotClientInstance);
-        } catch (IOException | LeagueException e) {
+            login(configuration, getRiotClientInstance());
+        } catch (IOException | LeagueException | CaptchaException | InterruptedException | RiotClientException e) {
             callback.onLoginFlowException(e);
         }
     }
 
-    private void login(ClientConfiguration configuration, VirtualRiotClientInstance virtualRiotClientInstance) throws IOException, LeagueException {
+    private void login(ClientConfiguration configuration, VirtualRiotClientInstance virtualRiotClientInstance) throws IOException, LeagueException, CaptchaException, InterruptedException, RiotClientException {
         String username = configuration.getUsername();
         String password = configuration.getPassword();
-        VirtualRiotClient virtualRiotClient = virtualRiotClientInstance.login(username, password, configuration.getMultifactorSupplier());
+        VirtualRiotClient virtualRiotClient = virtualRiotClientInstance.login(username, password, configuration.getMultifactorSupplier(), new ManualCaptchaSupplier());
         VirtualLeagueClientInstance virtualLeagueClientInstance = virtualRiotClient.createVirtualLeagueClientInstance();
         CompletableFuture<VirtualLeagueClient> virtualLeagueClientFuture = virtualLeagueClientInstance.login(
                 configuration.getIgnoreSummoner(),

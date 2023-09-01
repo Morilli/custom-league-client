@@ -71,36 +71,50 @@ public class ChatMessage extends ChildUIComponent {
 
         if (words.length > 0) {
             StringBuilder currentLine = new StringBuilder();
+            String word = words[0];
+            int wordWidth = metrics.stringWidth(word);
             int spaceWidth = metrics.charWidth(' ');
 
-            currentLine.append(words[0]);
+            if (wordWidth > width) {
+                List<String> subwords = formatLongWord(word, width, metrics);
+                ListIterator<String> iterator = subwords.listIterator();
+
+                String subword = iterator.next();
+                while (iterator.hasNext()) {
+                    result.add(subword);
+                    subword = iterator.next();
+                }
+                currentLine.append(subword);
+            } else {
+                currentLine.append(word);
+            }
             for (int i = 1; i < words.length; i++) {
-                String word = words[i];
-                int wordWidth = metrics.stringWidth(word);
+                word = words[i];
+                wordWidth = metrics.stringWidth(word);
                 int currentLineWidth = metrics.stringWidth(currentLine.toString());
 
                 if (currentLineWidth + wordWidth + spaceWidth <= width) {
-                    currentLine.append(' ');
-                    currentLine.append(word);
-                } else {
+                    currentLine.append(' ').append(word);
+                } else if (wordWidth > width) {
                     if (!currentLine.isEmpty()) {
                         result.add(currentLine.toString());
                         currentLine.setLength(0);
                     }
 
-                    if (wordWidth > width) {
-                        List<String> subwords = formatLongWord(word, width, metrics);
-                        ListIterator<String> iterator = subwords.listIterator();
+                    List<String> subwords = formatLongWord(word, width, metrics);
+                    ListIterator<String> iterator = subwords.listIterator();
 
-                        String subword = iterator.next();
-                        while (iterator.hasNext()) {
-                            result.add(subword);
-                            subword = iterator.next();
-                        }
-                        currentLine.append(subword);
-                    } else {
-                        currentLine.append(word);
+                    String subword = iterator.next();
+                    while (iterator.hasNext()) {
+                        result.add(subword);
+                        subword = iterator.next();
                     }
+                    currentLine.append(subword);
+                } else {
+                    result.add(currentLine.toString());
+                    currentLine.setLength(0);
+
+                    currentLine.append(word);
                 }
             }
             result.add(currentLine.toString());

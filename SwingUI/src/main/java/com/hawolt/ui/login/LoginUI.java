@@ -1,8 +1,8 @@
 package com.hawolt.ui.login;
 
 import com.hawolt.LeagueClientUI;
-import com.hawolt.objects.LocalSettings;
-import com.hawolt.service.LocalSettingsService;
+import com.hawolt.client.settings.login.LoginSettings;
+import com.hawolt.client.settings.login.LoginSettingsService;
 import com.hawolt.ui.impl.JHintTextField;
 import com.hawolt.util.panel.MainUIComponent;
 
@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 
 /**
  * Created: 06/08/2023 13:10
@@ -23,8 +24,8 @@ public class LoginUI extends MainUIComponent implements ActionListener {
     private final JHintTextField username;
     private final JPasswordField password;
     private final ILoginCallback callback;
-    private final JCheckBox rememberMe;
     private final JButton login;
+    private final JCheckBox rememberMe;
 
     public static LoginUI show(LeagueClientUI leagueClientUI) {
         return new LoginUI(leagueClientUI);
@@ -38,6 +39,7 @@ public class LoginUI extends MainUIComponent implements ActionListener {
         this.username = new JHintTextField("");
         this.password = new JPasswordField();
         this.login = new JButton("Login");
+        this.login.setActionCommand("REGULAR");
         this.rememberMe = new JCheckBox("Remember Me");
         JLabel usernameLabel = new JLabel("Username");
         JLabel passwordLabel = new JLabel("Password");
@@ -81,15 +83,17 @@ public class LoginUI extends MainUIComponent implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        this.toggle(false);
         String pass = new String(password.getPassword());
         String user = username.getText();
-        toggle(false);
-
         if (rememberMe.isSelected()) {
-            LocalSettings settings = new LocalSettings(user, pass, rememberMe.isSelected());
-            LocalSettingsService.get().writeFile(settings);
+            LoginSettings settings = LoginSettingsService.get().getSettings();
+            settings.setUsername(user).setPassword(pass).setRememberMe(rememberMe.isSelected());
+            try {
+                LoginSettingsService.get().writeSettingsFile();
+            } catch (IOException ex) {
+            }
         }
-
         LeagueClientUI.service.execute(() -> callback.onLogin(user, pass));
     }
 }

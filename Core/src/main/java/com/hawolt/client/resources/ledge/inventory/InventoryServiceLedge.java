@@ -16,8 +16,8 @@ import java.util.HashMap;
  **/
 
 public class InventoryServiceLedge extends AbstractLedgeEndpoint {
-    public InventoryServiceLedge(LeagueClient client, String base) {
-        super(client, base);
+    public InventoryServiceLedge(LeagueClient client) {
+        super(client);
     }
 
     public String getInventoryToken() throws IOException {

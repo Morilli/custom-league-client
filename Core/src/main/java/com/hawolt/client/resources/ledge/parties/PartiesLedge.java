@@ -13,7 +13,6 @@ import com.hawolt.client.resources.ledge.summoner.objects.Summoner;
 import com.hawolt.generic.Constant;
 import com.hawolt.http.OkHttp3Client;
 import com.hawolt.http.layer.IResponse;
-import com.hawolt.virtual.leagueclient.authentication.Userinfo;
 import com.hawolt.virtual.leagueclient.client.Authentication;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -32,8 +31,8 @@ public class PartiesLedge extends AbstractLedgeEndpoint {
 
     private PartiesRegistration registration;
 
-    public PartiesLedge(LeagueClient client, String base) {
-        super(client, base);
+    public PartiesLedge(LeagueClient client) {
+        super(client);
     }
 
     public String getGameClientVersion() {
@@ -74,7 +73,7 @@ public class PartiesLedge extends AbstractLedgeEndpoint {
         registration.put("rankedOverviewToken", ledge.getLeague().getRankedOverviewToken());
         registration.put("simpleInventoryToken", ledge.getInventoryService().getInventoryToken());
         registration.put("summonerToken", ledge.getSummoner().getSummonerToken());
-        registration.put("userInfoToken", ((Userinfo) virtualLeagueClient.get(Authentication.USERINFO)).get("lol.userinfo_token", true));
+        registration.put("userInfoToken", virtualLeagueClient.get(Authentication.USERINFO).getSimple("userinfo_token"));
         object.put("registration", registration);
         object.put("serverUtcMillis", 0L);
         object.put("summonerId", userInformation.getUserInformationLeagueAccount().getSummonerId());
@@ -279,7 +278,7 @@ public class PartiesLedge extends AbstractLedgeEndpoint {
                 base,
                 name(),
                 version(),
-                client.getVirtualRiotClient().getRiotClientUser().getSub()
+                client.getVirtualRiotClient().getRiotClientUser().getPUUID()
         );
         Request request = jsonRequest(uri)
                 .get()

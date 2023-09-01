@@ -1,4 +1,4 @@
-package com.hawolt.client;
+package com.hawolt.client.misc;
 
 /**
  * Created: 27/07/2023 21:37
